@@ -5,12 +5,16 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimingDataTool.Model.DataModel;
 
 namespace TimingDataTool
 {
     public class IntersectionDataFormViewModel : IIntersectionDataFormViewModel
     {
         private IList<DataSet> filesDataSet;
+        private Intersection intersection;
+
+        public DataTable displayTable { get; set; }
 
         public void ImportExcelFilesAndLoad(string[] filesPaths)
         {
@@ -31,12 +35,14 @@ namespace TimingDataTool
         {
             foreach(DataSet ds in filesDataSet)
             {
-                FillControllerTables(ds);
+                FillIntersectionModels(ds);
             }
         }
 
-        private void FillControllerTables(DataSet ds)
+        private Intersection FillIntersectionModels(DataSet ds)
         {
+            Intersection intersection = new Intersection();
+
             DataTable dayPlanTable;
             DataTable phaseTimesTable;
             DataTable PatternsTable;
@@ -46,6 +52,10 @@ namespace TimingDataTool
             phaseTimesTable = ds.Tables[1];
             PatternsTable = ds.Tables[2];
             splitsExpandedTable = ds.Tables[3];
+
+            displayTable = dayPlanTable;
+
+            return intersection;
         }
 
         private DataSet ImportExcel(string filePath)

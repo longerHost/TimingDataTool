@@ -31,11 +31,17 @@ namespace TimingDataTool
             try
             {
                 ChooseFilesAndImport();
+                displayToDataGrid();
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void displayToDataGrid()
+        {
+            intersectionGridView.DataSource = viewModel.displayTable;
         }
 
         private void ChooseFilesAndImport()

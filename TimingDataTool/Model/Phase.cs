@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model.DataModel
 {
-    class TimingPlan
+    internal class Phase
     {
+        public string name;
+        public int phaseId;
+
+        public float Green;
+        public float Yellow;
+        public float Red;
     }
 }

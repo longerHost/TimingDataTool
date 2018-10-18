@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model.DataModel
 {
-    class Intersection
+    /// <summary>
+    /// There are 16 combinations in total for phasing sequence
+    /// </summary>
+    class PhasingSequence
     {
-        string intersectionId;
-
 
     }
 }

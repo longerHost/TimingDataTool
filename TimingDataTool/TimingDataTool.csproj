@@ -53,10 +53,11 @@
       <DependentUpon>IntersectionDataForm.cs</DependentUpon>
     </Compile>
     <Compile Include="IntersectionDataFormViewModel.cs" />
-    <Compile Include="Model\DataModel\Intersection.cs" />
-    <Compile Include="Model\DataModel\Phase.cs" />
-    <Compile Include="Model\DataModel\PhasingSequence.cs" />
-    <Compile Include="Model\DataModel\TimingPlan.cs" />
+    <Compile Include="Model\Intersection.cs" />
+    <Compile Include="Model\Phase.cs" />
+    <Compile Include="Model\PhasingSequence.cs" />
+    <Compile Include="Model\Schedule.cs" />
+    <Compile Include="Model\TimingPlan.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="IntersectionDataForm.resx">

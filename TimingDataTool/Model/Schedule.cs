@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TimingDataTool.Model.DataModel
+namespace TimingDataTool.Model
 {
-    class PhasingSequence
+    internal class Schedule
     {
+        public DateTime startTime;
+        public DateTime endTime;
     }
 }

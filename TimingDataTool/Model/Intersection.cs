@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model.DataModel
 {
-    class Phase
+    internal class Intersection
     {
+        public int Id;
+        public string name;
+        public string config;
     }
 }
