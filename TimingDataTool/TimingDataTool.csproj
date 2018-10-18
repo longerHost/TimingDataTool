@@ -45,14 +45,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="IIntersectionDataFormViewModel.cs" />
+    <Compile Include="IntersectionDataForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="IntersectionDataForm.Designer.cs">
+      <DependentUpon>IntersectionDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="IntersectionDataFormViewModel.cs" />
+    <Compile Include="Model\DataModel\Intersection.cs" />
+    <Compile Include="Model\DataModel\Phase.cs" />
+    <Compile Include="Model\DataModel\PhasingSequence.cs" />
+    <Compile Include="Model\DataModel\TimingPlan.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="IntersectionDataForm.resx">
+      <DependentUpon>IntersectionDataForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -75,5 +84,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
