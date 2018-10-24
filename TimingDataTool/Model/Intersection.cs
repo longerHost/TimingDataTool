@@ -9,7 +9,9 @@ namespace TimingDataTool.Model.DataModel
     internal class Intersection
     {
         public int Id;
-        public string name;
-        public string config;
+        public string Name;
+        public string Config;
+
+        public IDictionary<int, IList<DayPlan>> wholeWeeksDayPlan; //7 day plans Mon-Sun
     }
 }

@@ -5,6 +5,7 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimingDataTool.Model;
 using TimingDataTool.Model.DataModel;
 
 namespace TimingDataTool
@@ -42,20 +43,78 @@ namespace TimingDataTool
         private Intersection FillIntersectionModels(DataSet ds)
         {
             Intersection intersection = new Intersection();
-
-            DataTable dayPlanTable;
-            DataTable phaseTimesTable;
-            DataTable PatternsTable;
-            DataTable splitsExpandedTable;
-
-            dayPlanTable = ds.Tables[0];
-            phaseTimesTable = ds.Tables[1];
-            PatternsTable = ds.Tables[2];
-            splitsExpandedTable = ds.Tables[3];
-
-            displayTable = dayPlanTable;
-
+            //
+            displayTable = ds.Tables[0];
+            IDictionary<string, string> headerDic = GetIntersectionInfo(ds.Tables[0]);
+            intersection.Id = Convert.ToInt32(headerDic["ID"]);
+            intersection.Name = headerDic["Name"];
+            intersection.Config = headerDic["Configuration"];
+            intersection.wholeWeeksDayPlan = GetWholeWeekDayPlan(ds);
+            //
             return intersection;
+        }
+
+        private IDictionary<string, string> GetIntersectionInfo(DataTable dt)
+        {
+            IDictionary<string, string> headerDic = new Dictionary<string, string>();
+
+            foreach(DataRow r in dt.Rows)
+            {
+                if (r[0].ToString().Contains("Table")) break;
+                string[] temp = r[0].ToString().Split(new[] { ": " }, StringSplitOptions.None);
+                headerDic.Add(temp[0], temp[1]);
+            }
+            return headerDic;
+        }
+
+        private IDictionary<int, IList<DayPlan>> GetWholeWeekDayPlan(DataSet ds)
+        {
+            DataTable dayPlanTable = ds.Tables[0];
+            DataTable phaseTimesTable = ds.Tables[1];
+            DataTable PatternsTable = ds.Tables[2];
+            DataTable splitsExpandedTable = ds.Tables[3];
+
+            IDictionary<int, List<DataRow>> dayPlanData = GetValidDayPlanTableData(dayPlanTable);
+            IList<DataRow> phaseTimeOptionsData = GetValidPhaseTimeOptionsData(phaseTimesTable);
+            IList<DataRow> patternsData = GetValidPatternsTableData(PatternsTable);
+            IDictionary<int, List<DataRow>> splitsExpandedData = GetSplitsExpandedTableData(splitsExpandedTable);
+
+        }
+
+        private IDictionary<int, List<DataRow>> GetSplitsExpandedTableData(DataTable splitsExpandedTable)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IList<DataRow> GetValidPatternsTableData(DataTable patternsTable)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IList<DataRow> GetValidPhaseTimeOptionsData(DataTable phaseTimesTable)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IDictionary<int, List<DataRow>> GetValidDayPlanTableData(DataTable dt)
+        {
+            List<DataRow> validDataRows = new List<DataRow>();
+            List<List<DataRow>> dayRows = new List<List<DataRow>>();
+            List<int> dayIndexs = new List<int>();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                int index = dt.Rows.IndexOf(row);
+                int dayIndex = 0;
+                if (int.TryParse(row[0].ToString(), out dayIndex))
+                {
+                    if (dayIndex >= 1 && dayIndex <= 7)
+                    {
+                        validDataRows.Add(row);
+                    }
+                }
+            }
+            return validDataRows.GroupBy(r => Convert.ToInt32(r[0])).ToDictionary(l => l.Key, l => l.ToList());
         }
 
         private DataSet ImportExcel(string filePath)

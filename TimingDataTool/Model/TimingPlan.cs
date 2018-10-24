@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model.DataModel
 {
-    class TimingPlan
+    internal class TimingPlan
     {
         public Schedule TimingSchedule;
-        public float CycleTime;
+        public float CycleLength;
         public float Offset;
         public int SplitNumber;
         public int SequenceNumber;
+        public PhasingSequence seq;
+        public IList<Phase> phases;
     }
 }

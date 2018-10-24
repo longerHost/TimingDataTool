@@ -9,8 +9,8 @@ namespace TimingDataTool.Model.DataModel
     /// <summary>
     /// There are 16 combinations in total for phasing sequence
     /// </summary>
-    class PhasingSequence
+    internal class PhasingSequence
     {
-
+        IList<int> orders;
     }
 }

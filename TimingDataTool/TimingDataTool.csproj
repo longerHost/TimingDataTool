@@ -53,6 +53,8 @@
       <DependentUpon>IntersectionDataForm.cs</DependentUpon>
     </Compile>
     <Compile Include="IntersectionDataFormViewModel.cs" />
+    <Compile Include="Model\DayPlan.cs" />
+    <Compile Include="Model\DayPlanTable.cs" />
     <Compile Include="Model\Intersection.cs" />
     <Compile Include="Model\Phase.cs" />
     <Compile Include="Model\PhasingSequence.cs" />

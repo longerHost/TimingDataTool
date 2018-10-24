@@ -31,6 +31,9 @@ namespace TimingDataTool
             try
             {
                 ChooseFilesAndImport();
+
+
+
                 displayToDataGrid();
             }
             catch(Exception ex)
