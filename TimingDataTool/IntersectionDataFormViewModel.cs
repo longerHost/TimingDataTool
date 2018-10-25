@@ -13,7 +13,6 @@ namespace TimingDataTool
     public class IntersectionDataFormViewModel : IIntersectionDataFormViewModel
     {
         private IList<DataSet> filesDataSet;
-        private Intersection intersection;
 
         public DataTable displayTable { get; set; }
 
@@ -44,12 +43,12 @@ namespace TimingDataTool
         {
             Intersection intersection = new Intersection();
             //
-            displayTable = ds.Tables[0];
+            displayTable = ds.Tables[2];
             IDictionary<string, string> headerDic = GetIntersectionInfo(ds.Tables[0]);
             intersection.Id = Convert.ToInt32(headerDic["ID"]);
             intersection.Name = headerDic["Name"];
             intersection.Config = headerDic["Configuration"];
-            intersection.wholeWeeksDayPlan = GetWholeWeekDayPlan(ds);
+            GetWholeWeekDayPlan(ds);
             //
             return intersection;
         }
@@ -67,11 +66,12 @@ namespace TimingDataTool
             return headerDic;
         }
 
-        private IDictionary<int, IList<DayPlan>> GetWholeWeekDayPlan(DataSet ds)
+        //IDictionary<int, IList<DayPlan>>
+        private void GetWholeWeekDayPlan(DataSet ds)
         {
             DataTable dayPlanTable = ds.Tables[0];
-            DataTable phaseTimesTable = ds.Tables[1];
-            DataTable PatternsTable = ds.Tables[2];
+            DataTable phaseTimesTable = ds.Tables[2];
+            DataTable PatternsTable = ds.Tables[1];
             DataTable splitsExpandedTable = ds.Tables[3];
 
             IDictionary<int, List<DataRow>> dayPlanData = GetValidDayPlanTableData(dayPlanTable);
@@ -79,32 +79,88 @@ namespace TimingDataTool
             IList<DataRow> patternsData = GetValidPatternsTableData(PatternsTable);
             IDictionary<int, List<DataRow>> splitsExpandedData = GetSplitsExpandedTableData(splitsExpandedTable);
 
+            GetDayPlans(dayPlanData, phaseTimeOptionsData, patternsData, splitsExpandedData);
         }
 
-        private IDictionary<int, List<DataRow>> GetSplitsExpandedTableData(DataTable splitsExpandedTable)
+        private void GetDayPlans(IDictionary<int, List<DataRow>> dayPlanData, IList<DataRow> phaseTimeOptionsData, IList<DataRow> patternsData, IDictionary<int, List<DataRow>> splitsExpandedData)
         {
-            throw new NotImplementedException();
+            foreach(int dayIndex in dayPlanData.Keys)
+            {
+                List<DataRow> dayDetails = dayPlanData[dayIndex];
+                DataRow hourRow = dayDetails[0];
+                DataRow minuteRow = dayDetails[1];
+                DataRow actionRow = dayDetails[2];
+
+                //TODO
+            }
         }
 
-        private IList<DataRow> GetValidPatternsTableData(DataTable patternsTable)
+        private IDictionary<int, List<DataRow>> GetSplitsExpandedTableData(DataTable st)
         {
-            throw new NotImplementedException();
+            List<DataRow> validDataRows = new List<DataRow>();
+            List<List<DataRow>> patternRows = new List<List<DataRow>>();
+
+            foreach(DataRow r in st.Rows)
+            {
+                int patternIndex = 0;
+                if(int.TryParse(r[0].ToString(), out patternIndex))
+                {
+                    if((patternIndex >= 9 && patternIndex <=21) || (patternIndex>= 26 && patternIndex <= 30))
+                    {
+                        validDataRows.Add(r);
+                    }
+                }
+            }
+
+            return validDataRows.GroupBy(r => Convert.ToInt32(r[0])).ToDictionary(l => l.Key, l => l.ToList());
         }
 
-        private IList<DataRow> GetValidPhaseTimeOptionsData(DataTable phaseTimesTable)
+        private IList<DataRow> GetValidPatternsTableData(DataTable pt)
         {
-            throw new NotImplementedException();
+            List<DataRow> validDataRow = new List<DataRow>();
+            foreach(DataRow r in pt.Rows)
+            {
+                string[] temp = r[0].ToString().Split(' ');
+                if (temp.Length == 2)
+                {
+                    string pattern = temp[0];
+                    if(pattern == "Pattern")
+                    {
+                        int patternIndex = 0;
+                        if(int.TryParse(temp[1], out patternIndex))
+                        {
+                            if((patternIndex >= 9 && patternIndex <= 21) || (patternIndex >= 26 && patternIndex <= 30))
+                            {
+                                validDataRow.Add(r);
+                            }
+                        }
+                    }
+                }
+            }
+            return validDataRow;
+        }
+
+        private IList<DataRow> GetValidPhaseTimeOptionsData(DataTable pt)
+        {
+            List<DataRow> validDataRow = new List<DataRow>();
+            foreach(DataRow r in pt.Rows)
+            {
+                string term = r[0].ToString();
+                if(term == "Walk" || term == "Ped Clearance" || term == "Yellow Clr" || term == "Red Clr")
+                {
+                    validDataRow.Add(r);
+                }
+            }
+            return validDataRow;
         }
 
         private IDictionary<int, List<DataRow>> GetValidDayPlanTableData(DataTable dt)
         {
             List<DataRow> validDataRows = new List<DataRow>();
             List<List<DataRow>> dayRows = new List<List<DataRow>>();
-            List<int> dayIndexs = new List<int>();
 
             foreach (DataRow row in dt.Rows)
             {
-                int index = dt.Rows.IndexOf(row);
                 int dayIndex = 0;
                 if (int.TryParse(row[0].ToString(), out dayIndex))
                 {
