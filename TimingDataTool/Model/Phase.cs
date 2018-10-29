@@ -8,11 +8,45 @@ namespace TimingDataTool.Model.DataModel
 {
     internal class Phase
     {
-        public string name;
-        public int phaseId;
+        private int phaseId;
+        private bool coordinatePhase;
+        private string mode;
+        private int length;
 
-        public float Green;
-        public float Yellow;
-        public float Red;
+        private float Green;
+        private float Yellow;
+        private float Red;
+
+        public int PhaseId
+        {
+            get => phaseId;
+            set => phaseId = value;
+        }
+
+        public bool CoordinatePhase
+        {
+            get => coordinatePhase;
+            set => coordinatePhase = value;
+        }
+
+        public string Mode
+        {
+            get => mode;
+            set => mode = value;
+        }
+
+        public int Length
+        {
+            get => length;
+            set => length = value;
+        }
+
+        public Phase(int id, int len, bool coordinate, string mode)
+        {
+            PhaseId = id;
+            Length = len;
+            CoordinatePhase = coordinate;
+            Mode = mode;
+        }
     }
 }

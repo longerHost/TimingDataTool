@@ -59,6 +59,7 @@
     <Compile Include="Model\Phase.cs" />
     <Compile Include="Model\PhasingSequence.cs" />
     <Compile Include="Model\Schedule.cs" />
+    <Compile Include="Model\Split.cs" />
     <Compile Include="Model\TimingPlan.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

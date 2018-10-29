@@ -8,7 +8,25 @@ namespace TimingDataTool.Model
 {
     internal class Schedule
     {
-        public DateTime startTime;
-        public DateTime endTime;
+        private DateTime sTime;
+        private DateTime eTime;
+
+        public DateTime StartTime
+        {
+            get => sTime;
+            set => sTime = value;
+        }
+
+        public DateTime EndTime
+        {
+            get => eTime;
+            set => eTime = value;
+        }
+
+        public Schedule(DateTime startTime, DateTime endTime)
+        {
+            StartTime = startTime;
+            EndTime = endTime;
+        }
     }
 }

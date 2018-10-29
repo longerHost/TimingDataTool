@@ -13,7 +13,7 @@ namespace TimingDataTool.Model.DataModel
         public float Offset;
         public int SplitNumber;
         public int SequenceNumber;
-        public PhasingSequence seq;
         public IList<Phase> phases;
+        public Split split;
     }
 }
