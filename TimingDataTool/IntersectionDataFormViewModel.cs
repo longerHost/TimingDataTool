@@ -10,6 +10,16 @@ namespace TimingDataTool
 {
     public class IntersectionDataFormViewModel : IIntersectionDataFormViewModel
     {
+        private DataTable DayPlanTable;
+        private DataTable PhaseTimesTable;
+        private DataTable PatternsTable;
+        private DataTable SplitsExpandedTable;
+
+        private IDictionary<int, List<DataRow>> DayPlanData;
+        private IList<DataRow> PhaseTimeOptionsData;
+        private IList<DataRow> PatternsData;
+        private IDictionary<int, List<DataRow>> SplitsExpandedData;
+
         private IList<DataSet> filesDataSet;
 
         public DataTable displayTable { get; set; }
@@ -39,6 +49,11 @@ namespace TimingDataTool
             return intersections;
         }
 
+        /// <summary>
+        /// Fill the data to our intersection model
+        /// </summary>
+        /// <param name="ds"></param>
+        /// <returns></returns>
         private Intersection FillIntersectionModels(DataSet ds)
         {
             Intersection intersection = new Intersection();
@@ -48,11 +63,16 @@ namespace TimingDataTool
             intersection.Id = Convert.ToInt32(headerDic["ID"]);
             intersection.Name = headerDic["Name"];
             intersection.Config = headerDic["Configuration"];
-            intersection.wholeWeeksDayPlan = GetValidIntersectionData(ds);
+            intersection.wholeWeeksDayPlan = GetWholeWeekDayPlans(ds);
             //
             return intersection;
         }
 
+        /// <summary>
+        /// Get the information in table header intersection details
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
         private IDictionary<string, string> GetIntersectionInfo(DataTable dt)
         {
             IDictionary<string, string> headerDic = new Dictionary<string, string>();
@@ -66,29 +86,29 @@ namespace TimingDataTool
             return headerDic;
         }
 
-        //IDictionary<int, IList<DayPlan>>
-        private IDictionary<int, IList<DayPlan>> GetValidIntersectionData(DataSet ds) //Need to be changed
+        /// <summary>
+        /// Get all dayPlan information in Day Plan table
+        /// </summary>
+        /// <param name="ds"></param>
+        /// <returns></returns>
+        private IDictionary<int, IList<DayPlan>> GetWholeWeekDayPlans(DataSet ds)
         {
-            DataTable dayPlanTable = ds.Tables[0];
-            DataTable phaseTimesTable = ds.Tables[2];
-            DataTable PatternsTable = ds.Tables[1];
-            DataTable splitsExpandedTable = ds.Tables[3];
-
-            IDictionary<int, List<DataRow>> dayPlanData = GetValidDayPlanTableData(dayPlanTable);
-            IList<DataRow> phaseTimeOptionsData = GetValidPhaseTimeOptionsData(phaseTimesTable);
-            IList<DataRow> patternsData = GetValidPatternsTableData(PatternsTable);
-            IDictionary<int, List<DataRow>> splitsExpandedData = GetSplitsExpandedTableData(splitsExpandedTable);
-
-            return GetWholeWeekDayPlans(dayPlanData, phaseTimeOptionsData, patternsData, splitsExpandedData);
-        }
-
-        private IDictionary<int, IList<DayPlan>> GetWholeWeekDayPlans(IDictionary<int, List<DataRow>> dayPlanData, IList<DataRow> phaseTimeOptionsData, IList<DataRow> patternsData, IDictionary<int, List<DataRow>> splitsExpandedData)
-        {
+            //Should move to initialization
+            DayPlanTable = ds.Tables[0];
+            PhaseTimesTable = ds.Tables[2];
+            PatternsTable = ds.Tables[1];
+            SplitsExpandedTable = ds.Tables[3];
+            
+            DayPlanData = GetValidDayPlanTableData(DayPlanTable);
+            PhaseTimeOptionsData = GetValidPhaseTimeOptionsData(PhaseTimesTable);
+            PatternsData = GetValidPatternsTableData(PatternsTable);
+            SplitsExpandedData = GetSplitsExpandedTableData(SplitsExpandedTable);
+            //
             Dictionary<int, IList<DayPlan>> wholeWeekDic = new Dictionary<int, IList<DayPlan>>();
             //Each day in a week
-            foreach (int dayIndex in dayPlanData.Keys)
+            foreach (int dayIndex in DayPlanData.Keys)
             {
-                IList<DayPlan> oneDayPlans = GetOneDayDayPlans(dayIndex ,dayPlanData, phaseTimeOptionsData, patternsData, splitsExpandedData);
+                IList<DayPlan> oneDayPlans = GetOneDayDayPlans(dayIndex);
                 wholeWeekDic.Add(dayIndex, oneDayPlans);
             }
 
@@ -104,9 +124,9 @@ namespace TimingDataTool
         /// <param name="patternsData"></param>
         /// <param name="splitsExpandedData"></param>
         /// <returns></returns>
-        private IList<DayPlan> GetOneDayDayPlans(int dayIndex, IDictionary<int, List<DataRow>> dayPlanData, IList<DataRow> phaseTimeOptionsData, IList<DataRow> patternsData, IDictionary<int, List<DataRow>> splitsExpandedData)
+        private IList<DayPlan> GetOneDayDayPlans(int dayIndex)
         {
-            IDictionary<string, List<string>> dayPlanDic = GetDayPlanDetailsInfo(dayIndex, dayPlanData);
+            IDictionary<string, List<string>> dayPlanDic = GetDayPlanDetailsInfo(dayIndex, DayPlanData);
 
             IList<string> hours = dayPlanDic["hours"];
             IList<string> minutes = dayPlanDic["minutes"];
@@ -117,67 +137,90 @@ namespace TimingDataTool
             //Each dayplan
             for (int k = 0; k < hours.Count() - 1; k++)
             {
-                DateTime sdt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[k]), Convert.ToInt32(minutes[k]), 0);
-                DateTime edt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[k + 1]), Convert.ToInt32(minutes[k + 1]), 0);
-                int actionNo = Convert.ToInt32(actions[k]);
-                Schedule sche = new Schedule(sdt, edt);
-
-                DayPlan dp = new DayPlan();
-                dp.Schedule = sche;
-                dp.DayPlanActionId = actionNo;
-                dp.DayPlanName = hourRow.Table.Rows[3][k + 2].ToString();
-
-                //get timing plan information
-                TimingPlan tp = new TimingPlan();
-                foreach (DataRow patternRow in patternsData)
-                {
-                    if (patternRow.ItemArray[3].ToString() == (actionNo + 8).ToString()) // There are problems here
-                    {
-                        tp.CycleLength = Convert.ToInt32(patternRow.ItemArray[1].ToString()); // Cycle time
-                        tp.SplitNumber = Convert.ToInt32(patternRow.ItemArray[3].ToString()); // Split number
-                        tp.Offset = Convert.ToInt32(patternRow.ItemArray[2].ToString()); // Offset
-                        tp.SequenceNumber = Convert.ToInt32(patternRow.ItemArray[4].ToString()); // Seq number
-                        break;
-                    }
-                }
-
-                //get split information
-                IList<DataRow> splitInfo = splitsExpandedData[actionNo + 8];
-                Split sp = new Split();
-                DataRow timeRow = splitInfo[0];
-                DataRow modeRow = splitInfo[1];
-                DataRow coordinateRow = splitInfo[2];
-
-                IList<Phase> phases = new List<Phase>();
-                for (int l = 2; l <= 9; l++)
-                {
-                    int cycleLength = Convert.ToInt32(timeRow[l].ToString());
-
-                    bool coor = false;
-                    if (coordinateRow[l].ToString() == "ON")
-                    {
-                        coor = true;
-                    }
-                    string mode = modeRow[l].ToString();
-                    Phase p = new Phase(l, cycleLength, coor, mode);
-                    phases.Add(p);
-                }
-
-                sp.phase1 = phases[0];
-                sp.phase2 = phases[1];
-                sp.phase3 = phases[2];
-                sp.phase4 = phases[3];
-                sp.phase5 = phases[4];
-                sp.phase6 = phases[5];
-                sp.phase7 = phases[6];
-                sp.phase8 = phases[7];
-
-                tp.split = sp;
-                dp.TimingPlan = tp;
-                dayPlans.Add(dp);
+                DayPlan sdp = GetSingleDayPlan(k, hours, minutes, actions);
+                dayPlans.Add(sdp);
             }
-
             return dayPlans;
+        }
+
+
+        private DayPlan GetSingleDayPlan(int dayPlanIndex, IList<string> hours, IList<string> minutes, IList<string> actions)
+        {
+            DayPlan dp = new DayPlan();
+            int actionNo = Convert.ToInt32(actions[dayPlanIndex]);
+            dp.DayPlanActionId = actionNo;
+            dp.DayPlanName = DayPlanTable.Rows[3][dayPlanIndex + 2].ToString();
+            dp.Schedule = GetDayPlanSchedule(dayPlanIndex, hours, minutes);
+            dp.TimingPlan = GetDayPlanTiming(actionNo);
+            return dp;
+        }
+
+        private TimingPlan GetDayPlanTiming(int actionNo)
+        {
+            //get timing plan information
+            TimingPlan tp = new TimingPlan();
+            foreach (DataRow patternRow in PatternsData)
+            {
+                if (patternRow.ItemArray[3].ToString() == (actionNo + 8).ToString()) // There are problems here
+                {
+                    tp.CycleLength = Convert.ToInt32(patternRow.ItemArray[1].ToString()); // Cycle time
+                    tp.SplitNumber = Convert.ToInt32(patternRow.ItemArray[3].ToString()); // Split number
+                    tp.Offset = Convert.ToInt32(patternRow.ItemArray[2].ToString()); // Offset
+                    tp.SequenceNumber = Convert.ToInt32(patternRow.ItemArray[4].ToString()); // Seq number
+                    break;
+                }
+            }
+            tp.split = GetTimingPlanSplit(actionNo);
+            return tp;
+        }
+
+        private Split GetTimingPlanSplit(int actionNo)
+        {
+            //get split information
+            Split sp = new Split();
+            IList<Phase> phases = GetSplitPhases(actionNo);
+            sp.phase1 = phases[0];
+            sp.phase2 = phases[1];
+            sp.phase3 = phases[2];
+            sp.phase4 = phases[3];
+            sp.phase5 = phases[4];
+            sp.phase6 = phases[5];
+            sp.phase7 = phases[6];
+            sp.phase8 = phases[7];
+            return sp;
+        }
+
+        //TODO: 
+        private IList<Phase> GetSplitPhases(int actionNo)
+        {
+            IList<DataRow> splitInfo = SplitsExpandedData[actionNo + 8];
+
+            DataRow timeRow = splitInfo[0];
+            DataRow modeRow = splitInfo[1];
+            DataRow coordinateRow = splitInfo[2];
+
+            IList<Phase> phases = new List<Phase>();
+            for (int l = 2; l <= 9; l++)
+            {
+                int cycleLength = Convert.ToInt32(timeRow[l].ToString());
+
+                bool coor = false;
+                if (coordinateRow[l].ToString() == "ON")
+                {
+                    coor = true;
+                }
+                string mode = modeRow[l].ToString();
+                Phase p = new Phase(l, cycleLength, coor, mode);
+                phases.Add(p);
+            }
+            return phases;
+        }
+
+        private Schedule GetDayPlanSchedule(int dayPlanIndex, IList<string> hours, IList<string> minutes)
+        {
+            DateTime sdt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[dayPlanIndex]), Convert.ToInt32(minutes[dayPlanIndex]), 0);
+            DateTime edt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[dayPlanIndex + 1]), Convert.ToInt32(minutes[dayPlanIndex + 1]), 0);
+            return new Schedule(sdt, edt);
         }
 
         private IDictionary<string, List<string>> GetDayPlanDetailsInfo(int dayIndex, IDictionary<int, List<DataRow>> dayPlanData)
@@ -238,7 +281,6 @@ namespace TimingDataTool
                     }
                 }
             }
-
             return validDataRows.GroupBy(r => Convert.ToInt32(r[0])).ToDictionary(l => l.Key, l => l.ToList());
         }
 
