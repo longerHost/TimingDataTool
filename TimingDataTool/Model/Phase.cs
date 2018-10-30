@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model.DataModel
 {
-    internal class Phase
+    public class Phase
     {
         private int phaseId;
         private bool coordinatePhase;

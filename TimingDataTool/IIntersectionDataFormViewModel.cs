@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimingDataTool.Model.DataModel;
 
 namespace TimingDataTool
 {
@@ -15,6 +16,6 @@ namespace TimingDataTool
         /// Select mutiple excel files and load them to memory
         /// </summary>
         /// <param name="fileNames"></param>
-        void ImportExcelFilesAndLoad(string[] fileNames);
+        IList<Intersection> ImportExcelFilesAndLoad(string[] fileNames);
     }
 }

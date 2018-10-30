@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model
 {
-    internal class Schedule
+    public class Schedule
     {
         private DateTime sTime;
         private DateTime eTime;

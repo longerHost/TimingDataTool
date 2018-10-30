@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model.DataModel
 {
-    internal class Intersection
+    public class Intersection
     {
         public int Id;
         public string Name;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TimingDataTool.Model.DataModel
 {
-    internal class TimingPlan
+    public class TimingPlan
     {
         public Schedule TimingSchedule;
         public float CycleLength;

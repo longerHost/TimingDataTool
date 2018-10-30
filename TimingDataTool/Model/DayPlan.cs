@@ -7,7 +7,7 @@ using TimingDataTool.Model.DataModel;
 
 namespace TimingDataTool.Model
 {
-    internal class DayPlan
+    public class DayPlan
     {
         public string DayPlanName;
         public int DayPlanActionId;

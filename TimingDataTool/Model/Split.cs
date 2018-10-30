@@ -7,7 +7,7 @@ using TimingDataTool.Model.DataModel;
 
 namespace TimingDataTool.Model
 {
-    internal class Split
+    public class Split
     {
         public Phase phase1;
         public Phase phase2;
