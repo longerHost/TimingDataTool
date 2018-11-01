@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Linq;
+using System.Windows.Forms;
 using TimingDataTool.Model;
 using TimingDataTool.Model.DataModel;
 
@@ -95,9 +96,9 @@ namespace TimingDataTool
         {
             //Should move to initialization
             DayPlanTable = ds.Tables[0];
-            PhaseTimesTable = ds.Tables[2];
-            PatternsTable = ds.Tables[1];
-            SplitsExpandedTable = ds.Tables[3];
+            PhaseTimesTable = ds.Tables[1];
+            SplitsExpandedTable = ds.Tables[2];
+            PatternsTable = ds.Tables[3];
             
             DayPlanData = GetValidDayPlanTableData(DayPlanTable);
             PhaseTimeOptionsData = GetValidPhaseTimeOptionsData(PhaseTimesTable);
@@ -135,16 +136,15 @@ namespace TimingDataTool
             IList<DayPlan> dayPlans = new List<DayPlan>();
 
             //Each dayplan
-            for (int k = 0; k < hours.Count(); k++)   //TODO
+            for (int planIndex = 0; planIndex < hours.Count(); planIndex++)
             {
-                DayPlan sdp = GetSingleDayPlan(k, hours, minutes, actions);
+                DayPlan sdp = GetSinglePlanInOneDay(dayIndex, planIndex, hours, minutes, actions);
                 dayPlans.Add(sdp);
             }
             return dayPlans;
         }
 
-
-        private DayPlan GetSingleDayPlan(int planIndex, IList<string> hours, IList<string> minutes, IList<string> actions)
+        private DayPlan GetSinglePlanInOneDay(int dayIndex, int planIndex, IList<string> hours, IList<string> minutes, IList<string> actions)
         {
             DayPlan dp = new DayPlan();
             int actionNo = Convert.ToInt32(actions[planIndex]);
@@ -153,6 +153,7 @@ namespace TimingDataTool
             dp.Schedule = GetDayPlanSchedule(planIndex, hours, minutes);
             dp.TimingPlan = GetDayPlanTiming(actionNo);
             return dp;
+
         }
 
         private TimingPlan GetDayPlanTiming(int actionNo)
@@ -161,17 +162,18 @@ namespace TimingDataTool
             TimingPlan tp = new TimingPlan();
             foreach (DataRow patternRow in PatternsData)
             {
+                int patternIndex = Convert.ToInt32(patternRow.ItemArray[0].ToString().Split(' ').Last());
                 bool mappingFounded = false;
                 if(actionNo <= 16)
                 {
-                    if (patternRow.ItemArray[3].ToString() == (actionNo + 8).ToString())
+                    if (patternIndex == actionNo + 8)
                     {
                         mappingFounded = true;
                     }
                 }
                 else
                 {
-                    if(patternRow.ItemArray[3].ToString() == actionNo.ToString())
+                    if(patternIndex == actionNo)
                     {
                         mappingFounded = true;
                     }
@@ -186,15 +188,15 @@ namespace TimingDataTool
                     break;
                 }
             }
-            tp.split = GetTimingPlanSplit(actionNo);
+            tp.split = GetTimingPlanSplit(tp.SplitNumber);
             return tp;
         }
 
-        private Split GetTimingPlanSplit(int actionNo)
+        private Split GetTimingPlanSplit(int SplitNumber)
         {
             //get split information
             Split sp = new Split();
-            IList<Phase> phases = GetSplitPhases(actionNo);
+            IList<Phase> phases = GetSplitPhases(SplitNumber);
             sp.phase1 = phases[0];
             sp.phase2 = phases[1];
             sp.phase3 = phases[2];
@@ -206,12 +208,12 @@ namespace TimingDataTool
             return sp;
         }
 
-        private IList<Phase> GetSplitPhases(int actionNo)
+        private IList<Phase> GetSplitPhases(int SplitNumber)
         {
-            int mappingAction = actionNo;
-            if(actionNo <= 16)
+            int mappingAction = SplitNumber;
+            if(SplitNumber <= 16)
             {
-                mappingAction = actionNo + 8;
+                mappingAction = SplitNumber + 8;
             }
 
             IList<DataRow> splitInfo = SplitsExpandedData[mappingAction];
@@ -328,7 +330,7 @@ namespace TimingDataTool
                         int patternIndex = 0;
                         if(int.TryParse(temp[1], out patternIndex))
                         {
-                            if(patternIndex >= 9 && patternIndex <= 30)
+                            if(patternIndex >= 0 && patternIndex <= 32)
                             {
                                 validDataRow.Add(r);
                             }
