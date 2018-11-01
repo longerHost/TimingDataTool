@@ -116,7 +116,7 @@ namespace TimingDataTool
         }
 
         /// <summary>
-        /// Get One day plans
+        /// Get all plan in one day
         /// </summary>
         /// <param name="dayIndex">Index of the day</param>
         /// <param name="dayPlanData"></param>
@@ -135,7 +135,7 @@ namespace TimingDataTool
             IList<DayPlan> dayPlans = new List<DayPlan>();
 
             //Each dayplan
-            for (int k = 0; k < hours.Count() - 1; k++)
+            for (int k = 0; k < hours.Count(); k++)   //TODO
             {
                 DayPlan sdp = GetSingleDayPlan(k, hours, minutes, actions);
                 dayPlans.Add(sdp);
@@ -144,13 +144,13 @@ namespace TimingDataTool
         }
 
 
-        private DayPlan GetSingleDayPlan(int dayPlanIndex, IList<string> hours, IList<string> minutes, IList<string> actions)
+        private DayPlan GetSingleDayPlan(int planIndex, IList<string> hours, IList<string> minutes, IList<string> actions)
         {
             DayPlan dp = new DayPlan();
-            int actionNo = Convert.ToInt32(actions[dayPlanIndex]);
+            int actionNo = Convert.ToInt32(actions[planIndex]);
             dp.DayPlanActionId = actionNo;
-            dp.DayPlanName = DayPlanTable.Rows[3][dayPlanIndex + 2].ToString();
-            dp.Schedule = GetDayPlanSchedule(dayPlanIndex, hours, minutes);
+            dp.DayPlanName = DayPlanTable.Rows[3][planIndex + 2].ToString();
+            dp.Schedule = GetDayPlanSchedule(planIndex, hours, minutes);
             dp.TimingPlan = GetDayPlanTiming(actionNo);
             return dp;
         }
@@ -161,7 +161,23 @@ namespace TimingDataTool
             TimingPlan tp = new TimingPlan();
             foreach (DataRow patternRow in PatternsData)
             {
-                if (patternRow.ItemArray[3].ToString() == (actionNo + 8).ToString()) // There are problems here
+                bool mappingFounded = false;
+                if(actionNo <= 16)
+                {
+                    if (patternRow.ItemArray[3].ToString() == (actionNo + 8).ToString())
+                    {
+                        mappingFounded = true;
+                    }
+                }
+                else
+                {
+                    if(patternRow.ItemArray[3].ToString() == actionNo.ToString())
+                    {
+                        mappingFounded = true;
+                    }
+                }
+
+                if (mappingFounded) // There are problems here
                 {
                     tp.CycleLength = Convert.ToInt32(patternRow.ItemArray[1].ToString()); // Cycle time
                     tp.SplitNumber = Convert.ToInt32(patternRow.ItemArray[3].ToString()); // Split number
@@ -190,10 +206,15 @@ namespace TimingDataTool
             return sp;
         }
 
-        //TODO: 
         private IList<Phase> GetSplitPhases(int actionNo)
         {
-            IList<DataRow> splitInfo = SplitsExpandedData[actionNo + 8];
+            int mappingAction = actionNo;
+            if(actionNo <= 16)
+            {
+                mappingAction = actionNo + 8;
+            }
+
+            IList<DataRow> splitInfo = SplitsExpandedData[mappingAction];
 
             DataRow timeRow = splitInfo[0];
             DataRow modeRow = splitInfo[1];
@@ -210,16 +231,25 @@ namespace TimingDataTool
                     coor = true;
                 }
                 string mode = modeRow[l].ToString();
-                Phase p = new Phase(l, cycleLength, coor, mode);
+                Phase p = new Phase(l - 1, cycleLength, coor, mode);
                 phases.Add(p);
             }
             return phases;
         }
 
-        private Schedule GetDayPlanSchedule(int dayPlanIndex, IList<string> hours, IList<string> minutes)
+        private Schedule GetDayPlanSchedule(int planIndex, IList<string> hours, IList<string> minutes)
         {
-            DateTime sdt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[dayPlanIndex]), Convert.ToInt32(minutes[dayPlanIndex]), 0);
-            DateTime edt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[dayPlanIndex + 1]), Convert.ToInt32(minutes[dayPlanIndex + 1]), 0);
+            DateTime sdt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[planIndex]), Convert.ToInt32(minutes[planIndex]), 0);
+            DateTime edt = new DateTime();
+            if (planIndex == hours.Count -1)
+            {
+                edt = new DateTime(2000, 1, 2, 0, 0, 0);
+            }
+            else
+            {
+                edt = new DateTime(2000, 1, 1, Convert.ToInt32(hours[planIndex + 1]), Convert.ToInt32(minutes[planIndex + 1]), 0);
+            }
+
             return new Schedule(sdt, edt);
         }
 
@@ -259,9 +289,9 @@ namespace TimingDataTool
                 minutes.Add(minute);
                 actions.Add(action);
             }
-            dayPlanDic.Add("hour", hours);
-            dayPlanDic.Add("minute", minutes);
-            dayPlanDic.Add("action", actions);
+            dayPlanDic.Add("hours", hours);
+            dayPlanDic.Add("minutes", minutes);
+            dayPlanDic.Add("actions", actions);
             return dayPlanDic;
         }
 
