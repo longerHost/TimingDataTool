@@ -8,12 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TimingDataTool.Model.DataModel;
 
 namespace TimingDataTool
 {
     public partial class IntersectionForm : Form
     {
         private IIntersectionDataFormViewModel viewModel;
+
+        private IList<Intersection> intersections;
 
         public IntersectionForm()
         {
@@ -31,9 +34,6 @@ namespace TimingDataTool
             try
             {
                 ChooseFilesAndImport();
-
-
-
                 displayToDataGrid();
             }
             catch(Exception ex)
@@ -44,7 +44,24 @@ namespace TimingDataTool
 
         private void displayToDataGrid()
         {
-            intersectionGridView.DataSource = viewModel.displayTable;
+            if(viewModel.Intersecions == null)
+            {
+                throw new Exception("Please import valid data files");
+            }
+            else
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("Name");
+                dt.Columns.Add("ID");
+                dt.Columns.Add("Configuration");
+
+                foreach(Intersection isc in viewModel.Intersecions)
+                {
+                    dt.Rows.Add(isc.Name, isc.Id, isc.Config);
+                }
+
+                intersectionGridView.DataSource = dt;
+            }
         }
 
         private void ChooseFilesAndImport()
@@ -59,9 +76,14 @@ namespace TimingDataTool
             }
         }
 
-        private void intersectionGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void intersectionGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            if(e.RowIndex != -1)
+            {
+                Intersection isc = viewModel.Intersecions[e.RowIndex];
+                SchedulesFrom pf = new SchedulesFrom(isc);
+                pf.ShowDialog();
+            }
         }
     }
 }

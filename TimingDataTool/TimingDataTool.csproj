@@ -56,15 +56,34 @@
     <Compile Include="Model\DayPlan.cs" />
     <Compile Include="Model\DayPlanTable.cs" />
     <Compile Include="Model\Intersection.cs" />
+    <Compile Include="Model\IntersectionPresetInfo.cs" />
     <Compile Include="Model\Phase.cs" />
     <Compile Include="Model\PhasingSequence.cs" />
     <Compile Include="Model\Schedule.cs" />
     <Compile Include="Model\Split.cs" />
     <Compile Include="Model\TimingPlan.cs" />
+    <Compile Include="SchedulesFrom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SchedulesFrom.Designer.cs">
+      <DependentUpon>SchedulesFrom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlanDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlanDetailsForm.Designer.cs">
+      <DependentUpon>PlanDetailsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="IntersectionDataForm.resx">
       <DependentUpon>IntersectionDataForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SchedulesFrom.resx">
+      <DependentUpon>SchedulesFrom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlanDetailsForm.resx">
+      <DependentUpon>PlanDetailsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

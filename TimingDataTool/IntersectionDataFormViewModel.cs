@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Linq;
-using System.Windows.Forms;
 using TimingDataTool.Model;
 using TimingDataTool.Model.DataModel;
 
@@ -11,6 +10,8 @@ namespace TimingDataTool
 {
     public class IntersectionDataFormViewModel : IIntersectionDataFormViewModel
     {
+        public IList<Intersection> Intersecions { set; get; }
+
         private DataTable DayPlanTable;
         private DataTable PhaseTimesTable;
         private DataTable PatternsTable;
@@ -23,8 +24,6 @@ namespace TimingDataTool
 
         private IList<DataSet> filesDataSet;
 
-        public DataTable displayTable { get; set; }
-
         public IList<Intersection> ImportExcelFilesAndLoad(string[] filesPaths)
         {
             filesDataSet = new List<DataSet>();
@@ -32,8 +31,8 @@ namespace TimingDataTool
             {
                 filesDataSet.Add(ImportExcel(filePath));
             }
-
-            return LoadFilesContent(filesDataSet);
+            Intersecions = LoadFilesContent(filesDataSet);
+            return Intersecions;
         }
 
         /// <summary>
@@ -59,14 +58,45 @@ namespace TimingDataTool
         {
             Intersection intersection = new Intersection();
             //
-            displayTable = ds.Tables[2];
             IDictionary<string, string> headerDic = GetIntersectionInfo(ds.Tables[0]);
             intersection.Id = Convert.ToInt32(headerDic["ID"]);
             intersection.Name = headerDic["Name"];
             intersection.Config = headerDic["Configuration"];
             intersection.wholeWeeksDayPlan = GetWholeWeekDayPlans(ds);
+            intersection.presetInfo = GetIntersectionPresetInformation(PhaseTimeOptionsData);
             //
             return intersection;
+        }
+
+        private IntersectionPresetInfo GetIntersectionPresetInformation(IList<DataRow> PhaseData)
+        {
+            IntersectionPresetInfo info = new IntersectionPresetInfo();
+            IList<string> phaseNameStrings = new List<string>(new string[] { "Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6", "Phase 7", "Phase 8", "Phase 9", "Phase 10", "Phase 11", "Phase 12", "Phase 13", "Phase 14", "Phase 15", "Phase 16" });
+
+            IDictionary<string, double> walkDic = new Dictionary<string, double>();
+            IDictionary<string, double> pedClearDic = new Dictionary<string, double>();
+            IDictionary<string, double> yellowCtrDic = new Dictionary<string, double>();
+            IDictionary<string, double> redCtrDic = new Dictionary<string, double>();
+
+            for(int i = 0; i < 16; i++)
+            {
+                double walkValue = Convert.ToDouble(PhaseData[0][i + 1].ToString());
+                double pedValue = Convert.ToDouble(PhaseData[1][i + 1].ToString());
+                double yellowCtrValue = Convert.ToDouble(PhaseData[2][i + 1].ToString());
+                double redCtrValue = Convert.ToDouble(PhaseData[3][i + 1].ToString());
+
+                walkDic.Add(phaseNameStrings[i], walkValue);
+                pedClearDic.Add(phaseNameStrings[i], pedValue);
+                yellowCtrDic.Add(phaseNameStrings[i], yellowCtrValue);
+                redCtrDic.Add(phaseNameStrings[i], redCtrValue);
+            }
+
+            info.WalkInfo = walkDic;
+            info.PedClearance = pedClearDic;
+            info.YellowCtl = yellowCtrDic;
+            info.RedCtr = redCtrDic;
+
+            return info;
         }
 
         /// <summary>
@@ -153,7 +183,6 @@ namespace TimingDataTool
             dp.Schedule = GetDayPlanSchedule(planIndex, hours, minutes);
             dp.TimingPlan = GetDayPlanTiming(actionNo);
             return dp;
-
         }
 
         private TimingPlan GetDayPlanTiming(int actionNo)
@@ -205,6 +234,15 @@ namespace TimingDataTool
             sp.phase6 = phases[5];
             sp.phase7 = phases[6];
             sp.phase8 = phases[7];
+            sp.phase9 = phases[8];
+            sp.phase10 = phases[9];
+            sp.phase11 = phases[10];
+            sp.phase12 = phases[11];
+            sp.phase13 = phases[12];
+            sp.phase14 = phases[13];
+            sp.phase15 = phases[14];
+            sp.phase16 = phases[15];
+
             return sp;
         }
 
@@ -223,7 +261,7 @@ namespace TimingDataTool
             DataRow coordinateRow = splitInfo[2];
 
             IList<Phase> phases = new List<Phase>();
-            for (int l = 2; l <= 9; l++)
+            for (int l = 2; l <= timeRow.Table.Columns.Count - 1; l++)
             {
                 int cycleLength = Convert.ToInt32(timeRow[l].ToString());
 
@@ -291,6 +329,7 @@ namespace TimingDataTool
                 minutes.Add(minute);
                 actions.Add(action);
             }
+
             dayPlanDic.Add("hours", hours);
             dayPlanDic.Add("minutes", minutes);
             dayPlanDic.Add("actions", actions);
@@ -307,12 +346,10 @@ namespace TimingDataTool
                 int patternIndex = 0;
                 if(int.TryParse(r[0].ToString(), out patternIndex))
                 {
-                    if(patternIndex >= 9 && patternIndex <=30)
-                    {
-                        validDataRows.Add(r);
-                    }
+                    validDataRows.Add(r);
                 }
             }
+
             return validDataRows.GroupBy(r => Convert.ToInt32(r[0])).ToDictionary(l => l.Key, l => l.ToList());
         }
 

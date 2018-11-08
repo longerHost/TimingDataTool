@@ -10,7 +10,10 @@ namespace TimingDataTool
 {
     public interface IIntersectionDataFormViewModel
     {
-        DataTable displayTable { get; set; }
+        /// <summary>
+        /// intersection instances
+        /// </summary>
+        IList<Intersection> Intersecions { set; get; }
 
         /// <summary>
         /// Select mutiple excel files and load them to memory

@@ -12,6 +12,7 @@ namespace TimingDataTool.Model.DataModel
         public string Name;
         public string Config;
 
+        public IntersectionPresetInfo presetInfo;
         public IDictionary<int, IList<DayPlan>> wholeWeeksDayPlan; //7 day plans Mon-Sun
     }
 }

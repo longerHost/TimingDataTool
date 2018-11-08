@@ -13,6 +13,12 @@ namespace TimingDataTool.Model.DataModel
         private string mode;
         private int length;
 
+        //public information
+        private int walk;
+        private int pedClearance;
+        private int yellowCtr;
+        private int redCtr;
+
         private float Green;
         private float Yellow;
         private float Red;

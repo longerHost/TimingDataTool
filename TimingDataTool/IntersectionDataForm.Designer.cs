@@ -45,12 +45,14 @@
             // 
             // intersectionGridView
             // 
+            this.intersectionGridView.AllowUserToAddRows = false;
+            this.intersectionGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.intersectionGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.intersectionGridView.Location = new System.Drawing.Point(12, 41);
             this.intersectionGridView.Name = "intersectionGridView";
             this.intersectionGridView.Size = new System.Drawing.Size(711, 434);
             this.intersectionGridView.TabIndex = 1;
-            this.intersectionGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.intersectionGridView_CellContentClick);
+            this.intersectionGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.intersectionGridView_CellClick);
             // 
             // IntersectionForm
             // 
