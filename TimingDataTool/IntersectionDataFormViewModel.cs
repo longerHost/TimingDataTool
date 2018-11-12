@@ -225,36 +225,13 @@ namespace TimingDataTool
         {
             //get split information
             Split sp = new Split();
-            IList<Phase> phases = GetSplitPhases(SplitNumber);
-            sp.phase1 = phases[0];
-            sp.phase2 = phases[1];
-            sp.phase3 = phases[2];
-            sp.phase4 = phases[3];
-            sp.phase5 = phases[4];
-            sp.phase6 = phases[5];
-            sp.phase7 = phases[6];
-            sp.phase8 = phases[7];
-            sp.phase9 = phases[8];
-            sp.phase10 = phases[9];
-            sp.phase11 = phases[10];
-            sp.phase12 = phases[11];
-            sp.phase13 = phases[12];
-            sp.phase14 = phases[13];
-            sp.phase15 = phases[14];
-            sp.phase16 = phases[15];
-
+            sp.phases = GetSplitPhases(SplitNumber);
             return sp;
         }
 
         private IList<Phase> GetSplitPhases(int SplitNumber)
         {
-            int mappingAction = SplitNumber;
-            if(SplitNumber <= 16)
-            {
-                mappingAction = SplitNumber + 8;
-            }
-
-            IList<DataRow> splitInfo = SplitsExpandedData[mappingAction];
+            IList<DataRow> splitInfo = SplitsExpandedData[SplitNumber];
 
             DataRow timeRow = splitInfo[0];
             DataRow modeRow = splitInfo[1];

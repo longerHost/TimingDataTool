@@ -37,14 +37,23 @@ namespace TimingDataTool
             IDictionary<string, double> rp = intersection.presetInfo.RedCtr;
 
             //Add Rows
-            dt.Rows.Add("Split", s.phase1.Length, s.phase2.Length, s.phase3.Length, s.phase4.Length, s.phase5.Length, s.phase6.Length, s.phase7.Length, s.phase8.Length, s.phase9.Length, s.phase10.Length, s.phase11.Length, s.phase12.Length, s.phase13.Length, s.phase14.Length, s.phase15.Length, s.phase16.Length);
+            dt.Rows.Add("Split", s.phases[0].Length, s.phases[1].Length, s.phases[2].Length, s.phases[3].Length, s.phases[4].Length, s.phases[5].Length, s.phases[6].Length, s.phases[7].Length, s.phases[8].Length, s.phases[9].Length, s.phases[10].Length, s.phases[11].Length, s.phases[12].Length, s.phases[13].Length, s.phases[14].Length, s.phases[15].Length);
             dt.Rows.Add("Walk", wp[pns[0]], wp[pns[1]], wp[pns[2]], wp[pns[3]], wp[pns[4]], wp[pns[5]], wp[pns[6]], wp[pns[7]], wp[pns[8]], wp[pns[9]], wp[pns[10]], wp[pns[11]], wp[pns[12]], wp[pns[13]], wp[pns[14]], wp[pns[15]]);
             dt.Rows.Add("Ped Clear", pp[pns[0]], pp[pns[1]], pp[pns[2]], pp[pns[3]], pp[pns[4]], pp[pns[5]], pp[pns[6]], pp[pns[7]], pp[pns[8]], pp[pns[9]], pp[pns[10]], pp[pns[11]], pp[pns[12]], pp[pns[13]], pp[pns[14]], pp[pns[15]]);
             dt.Rows.Add("Yellow Ctrl", yp[pns[0]], yp[pns[1]], yp[pns[2]], yp[pns[3]], yp[pns[4]], yp[pns[5]], yp[pns[6]], yp[pns[7]], yp[pns[8]], yp[pns[9]], yp[pns[10]], yp[pns[11]], yp[pns[12]], yp[pns[13]], yp[pns[14]], yp[pns[15]]);
             dt.Rows.Add("Red Ctrl", rp[pns[0]], rp[pns[1]], rp[pns[2]], rp[pns[3]], rp[pns[4]], rp[pns[5]], rp[pns[6]], rp[pns[7]], rp[pns[8]], rp[pns[9]], rp[pns[10]], rp[pns[11]], rp[pns[12]], rp[pns[13]], rp[pns[14]], rp[pns[15]]);
 
-            dt.Columns["Phase 1"].ColumnName = "Phase 1";
+            for(int i = 0; i < dp.TimingPlan.split.phases.Count; i++)
+            {
+                Phase ph = dp.TimingPlan.split.phases[i];
+                if(ph.CoordinatePhase == true)
+                {
+                    dt.Columns[pns[i]].ColumnName = pns[i] + "*";
+                    break;
+                }
+            }
 
+            dt.Columns["Phase 1"].ColumnName = "Phase 1";
             planDetailsDataGridView.DataSource = dt;
         }
 
