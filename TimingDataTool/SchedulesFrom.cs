@@ -42,11 +42,12 @@ namespace TimingDataTool
             {
                 IList<string> displaySchedules = new List<string>();
 
-                IList<string> startDateTimes = plans.Select(e => e.Schedule.StartTime.ToString()).ToList();
-                IList<string> endDateTimes = plans.Select(e => e.Schedule.EndTime.ToString()).ToList();
+                IList<DateTime> startDateTimes = plans.Select(e => e.Schedule.StartTime).ToList();
+                IList<DateTime> endDateTimes = plans.Select(e => e.Schedule.EndTime).ToList();
 
-                IList<string> startTimes = RemoveDateFromDateTimeStrings(startDateTimes);
-                IList<string> endTimes = RemoveDateFromDateTimeStrings(endDateTimes);
+                IList<string> startTimes = GetDisplayString(startDateTimes);
+                IList<string> endTimes = GetDisplayString(endDateTimes);
+                IList<int> actions = plans.Select(e => e.DayPlanActionId).ToList();
 
                 for (int i = startTimes.Count - 1; i < 8; i++)
                 {
@@ -59,7 +60,7 @@ namespace TimingDataTool
                 {
                     if(startTimes[j] != "N/A")
                     {
-                        displaySchedules.Add(startTimes[j] + " - " + endTimes[j]);
+                        displaySchedules.Add(startTimes[j] + " - " + endTimes[j] + " (" + actions[j] + ")");
                     }
                     else
                     {
@@ -74,36 +75,20 @@ namespace TimingDataTool
             PlansListGridView.DataSource = dt;
         }
 
-        private IList<string> RemoveDateFromDateTimeStrings(IList<string> DateTimeStrings)
+        private IList<string> GetDisplayString(IList<DateTime> DateTimes)
         {
             IList<string> timeStrings = new List<string>();
-            foreach (string dateTimeStr in DateTimeStrings)
+            foreach (DateTime dateTime in DateTimes)
             {
-                string startTimeStr = RemoveDateFromDateAndSecondsTimeString(dateTimeStr);
-                timeStrings.Add(startTimeStr);
+                string timeStr = dateTime.ToString("HH:mm");
+                timeStrings.Add(timeStr);
             }
             return timeStrings;
         }
 
-        private string RemoveDateFromDateAndSecondsTimeString(string startStr)
-        {
-            string timeStr = "";
-            if(startStr != null)
-            {
-                string[] dateItems = startStr.Split(' ');
-                string time = dateItems[1];
-                string[] timeItems = time.Split(':');
-                time.Replace(":" + timeItems[2],"");
-
-                timeStr = time + " " + dateItems[2];
-            }
-
-            return timeStr;
-        }
-
         private void PlansListGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.RowIndex != -1 && PlansListGridView.CurrentCell.Value.ToString() != "N/A")
+            if(e.RowIndex != -1 && PlansListGridView.CurrentCell.Value.ToString() != "N/A" && e.ColumnIndex != 0)
             {
                 IList<DayPlan> dayPlans = intersection.wholeWeeksDayPlan[e.RowIndex + 1];
                 DayPlan dp = dayPlans[e.ColumnIndex - 1];

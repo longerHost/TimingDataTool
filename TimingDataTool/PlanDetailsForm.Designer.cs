@@ -38,6 +38,8 @@
             this.sequenceValueLabel = new System.Windows.Forms.Label();
             this.scheduleStartLabel = new System.Windows.Forms.Label();
             this.scheduleEndLabel = new System.Windows.Forms.Label();
+            this.actionNoLabel = new System.Windows.Forms.Label();
+            this.patternNoValueLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.planDetailsDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,7 +59,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(32, 22);
+            this.label1.Location = new System.Drawing.Point(26, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(0, 13);
             this.label1.TabIndex = 1;
@@ -65,7 +67,7 @@
             // PlanCycleLabel
             // 
             this.PlanCycleLabel.AutoSize = true;
-            this.PlanCycleLabel.Location = new System.Drawing.Point(369, 17);
+            this.PlanCycleLabel.Location = new System.Drawing.Point(642, 17);
             this.PlanCycleLabel.Name = "PlanCycleLabel";
             this.PlanCycleLabel.Size = new System.Drawing.Size(86, 13);
             this.PlanCycleLabel.TabIndex = 2;
@@ -74,7 +76,7 @@
             // planOffsetLabel
             // 
             this.planOffsetLabel.AutoSize = true;
-            this.planOffsetLabel.Location = new System.Drawing.Point(369, 40);
+            this.planOffsetLabel.Location = new System.Drawing.Point(642, 40);
             this.planOffsetLabel.Name = "planOffsetLabel";
             this.planOffsetLabel.Size = new System.Drawing.Size(88, 13);
             this.planOffsetLabel.TabIndex = 3;
@@ -83,7 +85,7 @@
             // cycleValueLabel
             // 
             this.cycleValueLabel.AutoSize = true;
-            this.cycleValueLabel.Location = new System.Drawing.Point(461, 17);
+            this.cycleValueLabel.Location = new System.Drawing.Point(734, 17);
             this.cycleValueLabel.Name = "cycleValueLabel";
             this.cycleValueLabel.Size = new System.Drawing.Size(60, 13);
             this.cycleValueLabel.TabIndex = 4;
@@ -92,7 +94,7 @@
             // offsetValueLabel
             // 
             this.offsetValueLabel.AutoSize = true;
-            this.offsetValueLabel.Location = new System.Drawing.Point(461, 40);
+            this.offsetValueLabel.Location = new System.Drawing.Point(734, 40);
             this.offsetValueLabel.Name = "offsetValueLabel";
             this.offsetValueLabel.Size = new System.Drawing.Size(62, 13);
             this.offsetValueLabel.TabIndex = 5;
@@ -101,7 +103,7 @@
             // SequenceNoLabel
             // 
             this.SequenceNoLabel.AutoSize = true;
-            this.SequenceNoLabel.Location = new System.Drawing.Point(640, 17);
+            this.SequenceNoLabel.Location = new System.Drawing.Point(294, 17);
             this.SequenceNoLabel.Name = "SequenceNoLabel";
             this.SequenceNoLabel.Size = new System.Drawing.Size(99, 13);
             this.SequenceNoLabel.TabIndex = 6;
@@ -110,7 +112,7 @@
             // sequenceValueLabel
             // 
             this.sequenceValueLabel.AutoSize = true;
-            this.sequenceValueLabel.Location = new System.Drawing.Point(736, 17);
+            this.sequenceValueLabel.Location = new System.Drawing.Point(390, 17);
             this.sequenceValueLabel.Name = "sequenceValueLabel";
             this.sequenceValueLabel.Size = new System.Drawing.Size(83, 13);
             this.sequenceValueLabel.TabIndex = 7;
@@ -119,7 +121,7 @@
             // scheduleStartLabel
             // 
             this.scheduleStartLabel.AutoSize = true;
-            this.scheduleStartLabel.Location = new System.Drawing.Point(38, 17);
+            this.scheduleStartLabel.Location = new System.Drawing.Point(32, 17);
             this.scheduleStartLabel.Name = "scheduleStartLabel";
             this.scheduleStartLabel.Size = new System.Drawing.Size(50, 13);
             this.scheduleStartLabel.TabIndex = 9;
@@ -128,17 +130,37 @@
             // scheduleEndLabel
             // 
             this.scheduleEndLabel.AutoSize = true;
-            this.scheduleEndLabel.Location = new System.Drawing.Point(38, 40);
+            this.scheduleEndLabel.Location = new System.Drawing.Point(32, 40);
             this.scheduleEndLabel.Name = "scheduleEndLabel";
             this.scheduleEndLabel.Size = new System.Drawing.Size(50, 13);
             this.scheduleEndLabel.TabIndex = 10;
             this.scheduleEndLabel.Text = "schedule";
+            // 
+            // actionNoLabel
+            // 
+            this.actionNoLabel.AutoSize = true;
+            this.actionNoLabel.Location = new System.Drawing.Point(295, 40);
+            this.actionNoLabel.Name = "actionNoLabel";
+            this.actionNoLabel.Size = new System.Drawing.Size(67, 13);
+            this.actionNoLabel.TabIndex = 11;
+            this.actionNoLabel.Text = "Pattern No.: ";
+            // 
+            // patternNoValueLabel
+            // 
+            this.patternNoValueLabel.AutoSize = true;
+            this.patternNoValueLabel.Location = new System.Drawing.Point(364, 40);
+            this.patternNoValueLabel.Name = "patternNoValueLabel";
+            this.patternNoValueLabel.Size = new System.Drawing.Size(61, 13);
+            this.patternNoValueLabel.TabIndex = 12;
+            this.patternNoValueLabel.Text = "Pattern No.";
             // 
             // PlanDetailsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(873, 506);
+            this.Controls.Add(this.patternNoValueLabel);
+            this.Controls.Add(this.actionNoLabel);
             this.Controls.Add(this.scheduleEndLabel);
             this.Controls.Add(this.scheduleStartLabel);
             this.Controls.Add(this.sequenceValueLabel);
@@ -170,5 +192,7 @@
         private System.Windows.Forms.Label sequenceValueLabel;
         private System.Windows.Forms.Label scheduleStartLabel;
         private System.Windows.Forms.Label scheduleEndLabel;
+        private System.Windows.Forms.Label actionNoLabel;
+        private System.Windows.Forms.Label patternNoValueLabel;
     }
 }
