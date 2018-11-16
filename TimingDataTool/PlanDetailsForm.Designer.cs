@@ -40,6 +40,8 @@
             this.scheduleEndLabel = new System.Windows.Forms.Label();
             this.actionNoLabel = new System.Windows.Forms.Label();
             this.patternNoValueLabel = new System.Windows.Forms.Label();
+            this.ring1Label = new System.Windows.Forms.Label();
+            this.ring2Label = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.planDetailsDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -154,11 +156,31 @@
             this.patternNoValueLabel.TabIndex = 12;
             this.patternNoValueLabel.Text = "Pattern No.";
             // 
+            // ring1Label
+            // 
+            this.ring1Label.AutoSize = true;
+            this.ring1Label.Location = new System.Drawing.Point(444, 9);
+            this.ring1Label.Name = "ring1Label";
+            this.ring1Label.Size = new System.Drawing.Size(30, 13);
+            this.ring1Label.TabIndex = 13;
+            this.ring1Label.Text = "ring1";
+            // 
+            // ring2Label
+            // 
+            this.ring2Label.AutoSize = true;
+            this.ring2Label.Location = new System.Drawing.Point(444, 23);
+            this.ring2Label.Name = "ring2Label";
+            this.ring2Label.Size = new System.Drawing.Size(30, 13);
+            this.ring2Label.TabIndex = 14;
+            this.ring2Label.Text = "ring2";
+            // 
             // PlanDetailsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(873, 506);
+            this.Controls.Add(this.ring2Label);
+            this.Controls.Add(this.ring1Label);
             this.Controls.Add(this.patternNoValueLabel);
             this.Controls.Add(this.actionNoLabel);
             this.Controls.Add(this.scheduleEndLabel);
@@ -194,5 +216,7 @@
         private System.Windows.Forms.Label scheduleEndLabel;
         private System.Windows.Forms.Label actionNoLabel;
         private System.Windows.Forms.Label patternNoValueLabel;
+        private System.Windows.Forms.Label ring1Label;
+        private System.Windows.Forms.Label ring2Label;
     }
 }

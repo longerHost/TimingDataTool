@@ -17,6 +17,13 @@ namespace TimingDataTool
             offsetValueLabel.Text = dp.TimingPlan.Offset.ToString();
             sequenceValueLabel.Text = dp.TimingPlan.SequenceNumber.ToString();
             scheduleStartLabel.Text = "From: " + dp.Schedule.StartTime.TimeOfDay.ToString();
+
+            string sequenceString = ControllerInfoTool.SequenceIndexToSequence(dp.TimingPlan.SequenceNumber);
+            if(sequenceString.Length > 0)
+            {
+                ring1Label.Text = sequenceString.Split(':')[0];
+                ring2Label.Text = sequenceString.Split(':')[1];
+            }
             scheduleEndLabel.Text = "To: " + dp.Schedule.EndTime.TimeOfDay.ToString();
             patternNoValueLabel.Text = dp.DayPlanActionId.ToString();
 
