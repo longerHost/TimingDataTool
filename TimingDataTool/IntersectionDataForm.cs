@@ -44,7 +44,7 @@ namespace TimingDataTool
 
         private void displayToDataGrid()
         {
-            if(viewModel.Intersecions == null)
+            if(viewModel.Intersections == null)
             {
                 throw new Exception("Please import valid data files");
             }
@@ -55,7 +55,7 @@ namespace TimingDataTool
                 dt.Columns.Add("ID");
                 dt.Columns.Add("Configuration");
 
-                foreach(Intersection isc in viewModel.Intersecions)
+                foreach(Intersection isc in viewModel.Intersections)
                 {
                     dt.Rows.Add(isc.Name, isc.Id, isc.Config);
                 }
@@ -80,10 +80,16 @@ namespace TimingDataTool
         {
             if(e.RowIndex != -1)
             {
-                Intersection isc = viewModel.Intersecions[e.RowIndex];
+                Intersection isc = viewModel.Intersections[e.RowIndex];
                 SchedulesFrom pf = new SchedulesFrom(isc);
                 pf.ShowDialog();
             }
+        }
+
+        private void ExprotBtn_Click(object sender, EventArgs e)
+        {
+
+            viewModel.ExportDataToExcel(intersectionGridView);
         }
     }
 }

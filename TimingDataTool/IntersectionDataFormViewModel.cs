@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using TimingDataTool.Model;
 using TimingDataTool.Model.DataModel;
 
@@ -10,7 +12,7 @@ namespace TimingDataTool
 {
     public class IntersectionDataFormViewModel : IIntersectionDataFormViewModel
     {
-        public IList<Intersection> Intersecions { set; get; }
+        public IList<Intersection> Intersections { set; get; }
 
         private DataTable DayPlanTable;
         private DataTable PhaseTimesTable;
@@ -31,9 +33,10 @@ namespace TimingDataTool
             {
                 filesDataSet.Add(ImportExcel(filePath));
             }
-            Intersecions = LoadFilesContent(filesDataSet);
-            return Intersecions;
+            Intersections = LoadFilesContent(filesDataSet);
+            return Intersections;
         }
+
 
         /// <summary>
         /// Load files to memory
@@ -429,6 +432,103 @@ namespace TimingDataTool
             conn.Close();
             conn.Dispose();
             return ds;
+        }
+
+        /// <summary>
+        /// Export data to excel file
+        /// </summary>
+        /// <param name="intersectionGridView"></param>
+        public void ExportDataToExcel(DataGridView intersectionGridView)
+        {
+            //Check intersection loaded
+            if (Intersections == null || Intersections.Count <= 0)
+            {
+                MessageBox.Show("Please import proper files");
+                return;
+            }
+
+            // creating Excel Application
+            Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
+            if (xlApp == null)
+            {
+                MessageBox.Show("Excel is not properly installed!!");
+                return;
+            }
+
+            // Creating new workbook
+            Microsoft.Office.Interop.Excel.Workbook xlWorkBook;
+            object misValue = System.Reflection.Missing.Value;
+            xlWorkBook = xlApp.Workbooks.Add(misValue);
+            
+            // Creating intial worksheet
+            Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet;
+            xlWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+            CopyAllToClipboard(intersectionGridView);
+            Microsoft.Office.Interop.Excel.Range CR = (Microsoft.Office.Interop.Excel.Range)xlWorkSheet.Cells[1, 1];
+            CR.Select();
+            xlWorkSheet.Name = "intersections";
+            xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
+
+            Microsoft.Office.Interop.Excel.Worksheet scheduleSheet;
+            scheduleSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
+            scheduleSheet.Name = "Schedules";
+
+            SchedulesFrom sf = new SchedulesFrom(Intersections[0]);
+
+            for(int k = 0; k < Intersections.Count; k++)
+            {
+                DataTable scheduleDt = sf.getSheduleTableWithIntersection(Intersections[k]);
+
+                int multiplier = 9;
+
+                //Add header
+                for (int i = 0; i < scheduleDt.Columns.Count; i++)
+                {
+                    scheduleSheet.Cells[k * multiplier + 1, i + 1] = scheduleDt.Columns[i].ColumnName;
+                }
+
+                //
+                for (int i = 0; i < scheduleDt.Rows.Count; i++)
+                {
+                    for (int j = 0; j < scheduleDt.Rows.Count; j++)
+                    {
+                        scheduleSheet.Cells[k * multiplier + i + 2, j + 1] = scheduleDt.Rows[i][j];
+                    }
+                }
+            }
+
+            /*
+            for (int i = 0; i < 5; i++)
+            {
+                Microsoft.Office.Interop.Excel.Worksheet newWorksheet;
+                newWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
+            }
+            */
+
+            //B. Get needed data
+            //1. Intersection list
+            //2. Schedule list
+            //3. Plans list
+
+            //C. Export to files
+            xlWorkBook.SaveAs("c:\\Users\\xiaolongm\\Desktop\\csharp-Excel.xls", Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+            xlWorkBook.Close(true, misValue, misValue);
+            xlApp.Quit();
+
+            Marshal.ReleaseComObject(xlWorkSheet);
+            Marshal.ReleaseComObject(xlWorkBook);
+            Marshal.ReleaseComObject(xlApp);
+
+            MessageBox.Show("Excel file created , you can find the file c:\\Users\\xiaolongm\\Desktop\\csharp-Excel.xls");
+        }
+
+        private static void CopyAllToClipboard(DataGridView dgv)
+        {
+            dgv.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+            dgv.SelectAll();
+            DataObject dataObj = dgv.GetClipboardContent();
+            if (dataObj != null)
+                Clipboard.SetDataObject(dataObj);
         }
     }
 }

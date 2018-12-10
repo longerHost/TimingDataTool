@@ -19,10 +19,14 @@ namespace TimingDataTool
         public SchedulesFrom(Intersection isc)
         {
             InitializeComponent();
-
-            intersectionNameLabel.Text = isc.Name;
             intersection = isc;
+            intersectionNameLabel.Text = isc.Name;
+            DataTable dt = getSheduleTableWithIntersection(isc);
+            PlansListGridView.DataSource = dt;
+        }
 
+        public DataTable getSheduleTableWithIntersection(Intersection isc)
+        {
             DataTable dt = new DataTable();
             IList<IList<DayPlan>> daysPlans = isc.wholeWeeksDayPlan.Values.ToList();
 
@@ -41,10 +45,8 @@ namespace TimingDataTool
             foreach (IList<DayPlan> plans in daysPlans)
             {
                 IList<string> displaySchedules = new List<string>();
-
                 IList<DateTime> startDateTimes = plans.Select(e => e.Schedule.StartTime).ToList();
                 IList<DateTime> endDateTimes = plans.Select(e => e.Schedule.EndTime).ToList();
-
                 IList<string> startTimes = GetDisplayString(startDateTimes);
                 IList<string> endTimes = GetDisplayString(endDateTimes);
                 IList<int> actions = plans.Select(e => e.DayPlanActionId).ToList();
@@ -56,9 +58,9 @@ namespace TimingDataTool
                 }
 
                 displaySchedules.Add(index++.ToString());
-                for(int j = 0; j < 8; j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    if(startTimes[j] != "N/A")
+                    if (startTimes[j] != "N/A")
                     {
                         displaySchedules.Add(startTimes[j] + " - " + endTimes[j] + " (" + actions[j] + ")");
                     }
@@ -67,12 +69,9 @@ namespace TimingDataTool
                         displaySchedules.Add(startTimes[j]);
                     }
                 }
-
                 dt.Rows.Add(displaySchedules[0], displaySchedules[1], displaySchedules[2], displaySchedules[3], displaySchedules[4], displaySchedules[5], displaySchedules[6], displaySchedules[7], displaySchedules[8]);
-
             }
-
-            PlansListGridView.DataSource = dt;
+            return dt;
         }
 
         private IList<string> GetDisplayString(IList<DateTime> DateTimes)

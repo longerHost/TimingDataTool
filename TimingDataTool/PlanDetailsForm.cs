@@ -12,27 +12,34 @@ namespace TimingDataTool
         public PlanDetailsForm(Intersection intersection, DayPlan dp)
         {
             InitializeComponent();
+            SetDayPlayDetailsOnUI(dp);
+            planDetailsDataGridView.DataSource = getPlanTableWithIntersection(intersection, dp);
+        }
 
+        private void SetDayPlayDetailsOnUI(DayPlan dp)
+        {
             cycleValueLabel.Text = dp.TimingPlan.CycleLength.ToString();
             offsetValueLabel.Text = dp.TimingPlan.Offset.ToString();
             sequenceValueLabel.Text = dp.TimingPlan.SequenceNumber.ToString();
             scheduleStartLabel.Text = "From: " + dp.Schedule.StartTime.TimeOfDay.ToString();
 
             string sequenceString = ControllerInfoTool.SequenceIndexToSequence(dp.TimingPlan.SequenceNumber);
-            if(sequenceString.Length > 0)
+            if (sequenceString.Length > 0)
             {
                 ring1Label.Text = sequenceString.Split(':')[0];
                 ring2Label.Text = sequenceString.Split(':')[1];
             }
             scheduleEndLabel.Text = "To: " + dp.Schedule.EndTime.TimeOfDay.ToString();
             patternNoValueLabel.Text = dp.DayPlanActionId.ToString();
+        }
 
+        public DataTable getPlanTableWithIntersection(Intersection intersection, DayPlan dp)
+        {
             IList<string> pns = new List<string>(new string[] { "Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6", "Phase 7", "Phase 8", "Phase 9", "Phase 10", "Phase 11", "Phase 12", "Phase 13", "Phase 14", "Phase 15", "Phase 16" });
-
             //Add columns
             DataTable dt = new DataTable();
             dt.Columns.Add("Data Type");
-            foreach(string p in pns)
+            foreach (string p in pns)
             {
                 dt.Columns.Add(p);
             }
@@ -50,18 +57,16 @@ namespace TimingDataTool
             dt.Rows.Add("Yellow Ctrl", yp[pns[0]], yp[pns[1]], yp[pns[2]], yp[pns[3]], yp[pns[4]], yp[pns[5]], yp[pns[6]], yp[pns[7]], yp[pns[8]], yp[pns[9]], yp[pns[10]], yp[pns[11]], yp[pns[12]], yp[pns[13]], yp[pns[14]], yp[pns[15]]);
             dt.Rows.Add("Red Ctrl", rp[pns[0]], rp[pns[1]], rp[pns[2]], rp[pns[3]], rp[pns[4]], rp[pns[5]], rp[pns[6]], rp[pns[7]], rp[pns[8]], rp[pns[9]], rp[pns[10]], rp[pns[11]], rp[pns[12]], rp[pns[13]], rp[pns[14]], rp[pns[15]]);
 
-            for(int i = 0; i < dp.TimingPlan.split.phases.Count; i++)
+            for (int i = 0; i < dp.TimingPlan.split.phases.Count; i++)
             {
                 Phase ph = dp.TimingPlan.split.phases[i];
-                if(ph.CoordinatePhase == true)
+                if (ph.CoordinatePhase == true)
                 {
                     dt.Columns[pns[i]].ColumnName = pns[i] + "*";
                     break;
                 }
             }
-
-            dt.Columns["Phase 1"].ColumnName = "Phase 1";
-            planDetailsDataGridView.DataSource = dt;
+            return dt;
         }
 
         private void PlanDetailsForm_Load(object sender, EventArgs e)

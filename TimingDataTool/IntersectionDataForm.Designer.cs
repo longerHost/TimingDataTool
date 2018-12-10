@@ -30,6 +30,7 @@
         {
             this.importBtn = new System.Windows.Forms.Button();
             this.intersectionGridView = new System.Windows.Forms.DataGridView();
+            this.ExprotBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.intersectionGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -54,11 +55,22 @@
             this.intersectionGridView.TabIndex = 1;
             this.intersectionGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.intersectionGridView_CellClick);
             // 
+            // ExprotBtn
+            // 
+            this.ExprotBtn.Location = new System.Drawing.Point(628, 12);
+            this.ExprotBtn.Name = "ExprotBtn";
+            this.ExprotBtn.Size = new System.Drawing.Size(75, 23);
+            this.ExprotBtn.TabIndex = 2;
+            this.ExprotBtn.Text = "Export";
+            this.ExprotBtn.UseVisualStyleBackColor = true;
+            this.ExprotBtn.Click += new System.EventHandler(this.ExprotBtn_Click);
+            // 
             // IntersectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(735, 493);
+            this.Controls.Add(this.ExprotBtn);
             this.Controls.Add(this.intersectionGridView);
             this.Controls.Add(this.importBtn);
             this.Name = "IntersectionForm";
@@ -72,6 +84,7 @@
 
         private System.Windows.Forms.Button importBtn;
         private System.Windows.Forms.DataGridView intersectionGridView;
+        private System.Windows.Forms.Button ExprotBtn;
     }
 }
 
