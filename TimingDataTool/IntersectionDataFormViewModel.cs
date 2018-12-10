@@ -449,6 +449,7 @@ namespace TimingDataTool
 
             // creating Excel Application
             Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
+
             if (xlApp == null)
             {
                 MessageBox.Show("Excel is not properly installed!!");
@@ -469,16 +470,14 @@ namespace TimingDataTool
             xlWorkSheet.Name = "intersections";
             xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
 
+            // Creating schedules worksheet
             Microsoft.Office.Interop.Excel.Worksheet scheduleSheet;
             scheduleSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
             scheduleSheet.Name = "Schedules";
-
             SchedulesFrom sf = new SchedulesFrom(Intersections[0]);
-
             for(int k = 0; k < Intersections.Count; k++)
             {
                 DataTable scheduleDt = sf.getSheduleTableWithIntersection(Intersections[k]);
-
                 int multiplier = 9;
 
                 //Add header
@@ -497,13 +496,32 @@ namespace TimingDataTool
                 }
             }
 
+            //TODO:
+            //Intersection name on sheet should not exceed 31 characters, some of the name exceed the limitaiton
+            //and crash the program
+            //One file was enabled editing and program will get "cannot find the given key error"
+            
+            //Further to do
+            //1. load intersection with dataTable
+            //2. load intersection timing details to each sheet
+            //3. debug the given key issue
+            //4. debug could not copy column 7 and 8 on schedule
+
             /*
-            for (int i = 0; i < 5; i++)
-            {
-                Microsoft.Office.Interop.Excel.Worksheet newWorksheet;
-                newWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
-            }
+            System.Runtime.InteropServices.COMException: 'You typed an invalid name for a sheet or chart. Make sure that:
+            • The name that you type does not exceed 31 characters.
+            • The name does not contain any of the following characters:  :  \  /  ?  *  [  or  ]
+            • You did not leave the name blank.'
             */
+
+            //TODO: 
+            // Creating timing details for each intersection
+            for (int i = 0; i < Intersections.Count; i++)
+            {
+                Microsoft.Office.Interop.Excel.Worksheet intersectionTimingSheet;
+                intersectionTimingSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
+                intersectionTimingSheet.Name = Intersections[i].Name;
+            }
 
             //B. Get needed data
             //1. Intersection list
