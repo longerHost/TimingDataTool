@@ -519,26 +519,15 @@ namespace TimingDataTool
                     }
                 }
             }
-
-            //TODO:
-            //Intersection name on sheet should not exceed 31 characters, some of the name exceed the limitaiton
-            //and crash the program
             
             //Further to do
             //1. load intersection with dataTable
             //2. load intersection timing details to each sheet
-            //3. debug the given key issue
             //4. debug could not copy column 7 and 8 on schedule
-
-            /*
-            System.Runtime.InteropServices.COMException: 'You typed an invalid name for a sheet or chart. Make sure that:
-            • The name that you type does not exceed 31 characters.
-            • The name does not contain any of the following characters:  :  \  /  ?  *  [  or  ]
-            • You did not leave the name blank.'
-            */
 
             //TODO: 
             // Creating timing details for each intersection
+
             for (int i = 0; i < Intersections.Count; i++)
             {
                 Microsoft.Office.Interop.Excel.Worksheet intersectionTimingSheet;
