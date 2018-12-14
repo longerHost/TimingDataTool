@@ -523,7 +523,6 @@ namespace TimingDataTool
             //TODO:
             //Intersection name on sheet should not exceed 31 characters, some of the name exceed the limitaiton
             //and crash the program
-            //One file was enabled editing and program will get "cannot find the given key error"
             
             //Further to do
             //1. load intersection with dataTable
@@ -544,7 +543,15 @@ namespace TimingDataTool
             {
                 Microsoft.Office.Interop.Excel.Worksheet intersectionTimingSheet;
                 intersectionTimingSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
-                intersectionTimingSheet.Name = Intersections[i].Name;
+
+                string originalName = Intersections[i].Name;
+                string officialName = originalName;
+                if(originalName.Length > 31)
+                {
+                    officialName = originalName.Substring(0, 31);
+                }
+
+                intersectionTimingSheet.Name = officialName;
             }
 
             //B. Get needed data
