@@ -127,11 +127,34 @@ namespace TimingDataTool
         /// <returns></returns>
         private IDictionary<int, IList<DayPlan>> GetWholeWeekDayPlans(DataSet ds)
         {
-            //Should move to initialization
-            DayPlanTable = ds.Tables[0];
-            PhaseTimesTable = ds.Tables[1];
-            SplitsExpandedTable = ds.Tables[2];
-            PatternsTable = ds.Tables[3];
+            // Assign tables here
+            // Note: the table order will change after enable editing on excel.
+            // So here we use columns to identify the tables
+            for(int i = 0; i < ds.Tables.Count; i++)
+            {
+                DataTable dt = ds.Tables[i];
+                if(i == 0)
+                {
+                    DayPlanTable = dt;
+                    continue;
+                }
+
+                if(dt.Columns.Count == 5)
+                {
+                    PatternsTable = dt;
+                    continue;
+                }
+                else if(dt.Columns.Count == 17)
+                {
+                    PhaseTimesTable = dt;
+                    continue;
+                }
+                else
+                {
+                    SplitsExpandedTable = dt;
+                    continue;
+                }
+            }
             
             DayPlanData = GetValidDayPlanTableData(DayPlanTable);
             PhaseTimeOptionsData = GetValidPhaseTimeOptionsData(PhaseTimesTable);
@@ -188,6 +211,7 @@ namespace TimingDataTool
             return dp;
         }
 
+        // Get single timing plan
         private TimingPlan GetDayPlanTiming(int actionNo)
         {
             //get timing plan information

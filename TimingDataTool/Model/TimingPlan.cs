@@ -13,7 +13,5 @@ namespace TimingDataTool.Model.DataModel
         public int SplitNumber;
         public int SequenceNumber;
         public Split split;
-
-
     }
 }
