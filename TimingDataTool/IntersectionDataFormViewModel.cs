@@ -513,19 +513,21 @@ namespace TimingDataTool
                 //
                 for (int i = 0; i < scheduleDt.Rows.Count; i++)
                 {
-                    for (int j = 0; j < scheduleDt.Rows.Count; j++)
+                    for (int j = 0; j < scheduleDt.Columns.Count; j++)
                     {
                         scheduleSheet.Cells[k * multiplier + i + 2, j + 1] = scheduleDt.Rows[i][j];
                     }
                 }
             }
-            
+
             //Further to do
             //1. load intersection with dataTable
             //2. load intersection timing details to each sheet
-            //4. debug could not copy column 7 and 8 on schedule
+            //3. debug could not copy column 7 and 8 on schedule
+            //4. put intersection and schedule tab front
+            //5. delete the empty column in intersection list
 
-            //TODO: 
+            //TODO:
             // Creating timing details for each intersection
 
             for (int i = 0; i < Intersections.Count; i++)
