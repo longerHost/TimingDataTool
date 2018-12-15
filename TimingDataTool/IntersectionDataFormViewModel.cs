@@ -493,24 +493,27 @@ namespace TimingDataTool
             CR.Select();
             xlWorkSheet.Name = "intersections";
             xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
+            Microsoft.Office.Interop.Excel.Range range = (Microsoft.Office.Interop.Excel.Range)xlWorkSheet.get_Range("A1", Type.Missing);
+            range.EntireColumn.Delete(Type.Missing);
 
             // Creating schedules worksheet
             Microsoft.Office.Interop.Excel.Worksheet scheduleSheet;
             scheduleSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
             scheduleSheet.Name = "Schedules";
-            SchedulesFrom sf = new SchedulesFrom(Intersections[0]);
             for(int k = 0; k < Intersections.Count; k++)
             {
-                DataTable scheduleDt = sf.getSheduleTableWithIntersection(Intersections[k]);
+                SchedulesFrom sf = new SchedulesFrom(Intersections[0]);
+                Intersection isc = Intersections[k];
+                DataTable scheduleDt = sf.getSheduleTableWithIntersection(isc);
                 int multiplier = 9;
 
-                //Add header
+                // Add header
                 for (int i = 0; i < scheduleDt.Columns.Count; i++)
                 {
                     scheduleSheet.Cells[k * multiplier + 1, i + 1] = scheduleDt.Columns[i].ColumnName;
                 }
 
-                //
+                // Add content
                 for (int i = 0; i < scheduleDt.Rows.Count; i++)
                 {
                     for (int j = 0; j < scheduleDt.Columns.Count; j++)
@@ -518,37 +521,58 @@ namespace TimingDataTool
                         scheduleSheet.Cells[k * multiplier + i + 2, j + 1] = scheduleDt.Rows[i][j];
                     }
                 }
-            }
 
-            //Further to do
-            //1. load intersection with dataTable
-            //2. load intersection timing details to each sheet
-            //3. debug could not copy column 7 and 8 on schedule
-            //4. put intersection and schedule tab front
-            //5. delete the empty column in intersection list
-
-            //TODO:
-            // Creating timing details for each intersection
-
-            for (int i = 0; i < Intersections.Count; i++)
-            {
+                // Creating timing details for each intersection
                 Microsoft.Office.Interop.Excel.Worksheet intersectionTimingSheet;
                 intersectionTimingSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
 
-                string originalName = Intersections[i].Name;
+                string originalName = Intersections[k].Name;
                 string officialName = originalName;
-                if(originalName.Length > 31)
+                if (originalName.Length > 31)
                 {
                     officialName = originalName.Substring(0, 31);
                 }
 
                 intersectionTimingSheet.Name = officialName;
+
+                for(int dayIndex = 1; dayIndex <= isc.wholeWeeksDayPlan.Values.Count; dayIndex++)
+                {
+                    IList<DayPlan> plans = isc.wholeWeeksDayPlan.Values.ToList()[dayIndex-1];
+                    for(int planIndex = 1; planIndex <= plans.Count; planIndex++)
+                    {
+                        DayPlan plan = plans[planIndex - 1];
+                        PlanDetailsForm pf = new PlanDetailsForm(isc, isc.wholeWeeksDayPlan.Values.ToList()[dayIndex - 1][planIndex - 1]);
+                        DataTable detailsTable = pf.getPlanTableWithIntersection(isc, plan);
+
+                        //Fill the sheet one by one
+
+                        //Add header
+                        for (int i = 0; i < detailsTable.Columns.Count; i++)
+                        {
+                            intersectionTimingSheet.Cells[multiplier * ((dayIndex - 1) * 7 + (planIndex - 1)) + 1, 1] = plan.Schedule.StartTime.TimeOfDay.ToString();
+                            intersectionTimingSheet.Cells[multiplier * ((dayIndex - 1) * 7 + (planIndex - 1)) + 2, i + 1] = detailsTable.Columns[i].ColumnName;
+                        }
+
+                        // Add content
+                        for (int i = 0; i < detailsTable.Rows.Count; i++)
+                        {
+                            for (int j = 0; j < detailsTable.Columns.Count; j++)
+                            {
+                                intersectionTimingSheet.Cells[multiplier * ((dayIndex - 1) * 7 + (planIndex - 1)) + 3 + i, j + 1] = detailsTable.Rows[i][j];
+                            }
+                        }
+                    }
+                }
             }
 
-            //B. Get needed data
-            //1. Intersection list
-            //2. Schedule list
-            //3. Plans list
+            //Further to do  
+            //1. load intersection with dataTable  
+            //2. load intersection timing details to each sheet  
+            //3. debug could not copy column 7 and 8 on schedule ** Done
+            //4. put intersection and schedule tab front  
+            //5. delete the empty column in intersection list ** Done
+            //6. Mark intersection name for schedules  
+            //7. Copy intersection list cell by cell instead of from UI  **ignore
 
             //C. Export to files
             xlWorkBook.SaveAs("c:\\Users\\xiaolongm\\Desktop\\csharp-Excel.xls", Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
