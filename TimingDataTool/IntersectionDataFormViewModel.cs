@@ -535,6 +535,7 @@ namespace TimingDataTool
 
                 intersectionTimingSheet.Name = officialName;
 
+                int planNumber = 0;
                 for(int dayIndex = 1; dayIndex <= isc.wholeWeeksDayPlan.Values.Count; dayIndex++)
                 {
                     IList<DayPlan> plans = isc.wholeWeeksDayPlan.Values.ToList()[dayIndex-1];
@@ -549,8 +550,13 @@ namespace TimingDataTool
                         //Add header
                         for (int i = 0; i < detailsTable.Columns.Count; i++)
                         {
-                            intersectionTimingSheet.Cells[multiplier * ((dayIndex - 1) * 7 + (planIndex - 1)) + 1, 1] = plan.Schedule.StartTime.TimeOfDay.ToString();
-                            intersectionTimingSheet.Cells[multiplier * ((dayIndex - 1) * 7 + (planIndex - 1)) + 2, i + 1] = detailsTable.Columns[i].ColumnName;
+                            //plan information
+                            intersectionTimingSheet.Cells[multiplier * planNumber + 1, 1] = "Plan Index: " + (planNumber + 1).ToString();
+                            intersectionTimingSheet.Cells[multiplier * planNumber + 1, 2] = "Day Index: " + dayIndex.ToString();
+                            intersectionTimingSheet.Cells[multiplier * planNumber + 1, 3] = "Plan Start: " + plan.Schedule.StartTime.TimeOfDay.ToString();
+
+                            //Plan header
+                            intersectionTimingSheet.Cells[multiplier * planNumber + 2, i + 1] = detailsTable.Columns[i].ColumnName;
                         }
 
                         // Add content
@@ -558,21 +564,25 @@ namespace TimingDataTool
                         {
                             for (int j = 0; j < detailsTable.Columns.Count; j++)
                             {
-                                intersectionTimingSheet.Cells[multiplier * ((dayIndex - 1) * 7 + (planIndex - 1)) + 3 + i, j + 1] = detailsTable.Rows[i][j];
+                                intersectionTimingSheet.Cells[multiplier * planNumber + 3 + i, j + 1] = detailsTable.Rows[i][j];
                             }
                         }
+
+                        planNumber++;
                     }
                 }
             }
 
             //Further to do  
-            //1. load intersection with dataTable  
-            //2. load intersection timing details to each sheet  
+            //1. load intersection with dataTable   ** Done
+            //2. load intersection timing details to each sheet   ** Done
             //3. debug could not copy column 7 and 8 on schedule ** Done
             //4. put intersection and schedule tab front  
             //5. delete the empty column in intersection list ** Done
             //6. Mark intersection name for schedules  
             //7. Copy intersection list cell by cell instead of from UI  **ignore
+
+            //8. Fix issue when encounter N/A problem
 
             //C. Export to files
             xlWorkBook.SaveAs("c:\\Users\\xiaolongm\\Desktop\\csharp-Excel.xls", Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
