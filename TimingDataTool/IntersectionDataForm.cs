@@ -88,8 +88,16 @@ namespace TimingDataTool
 
         private void ExprotBtn_Click(object sender, EventArgs e)
         {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Excel files (*.xls)|*.xls|All files (*.*)|*.*";
+                sfd.Title = "Please name your file";
 
-            viewModel.ExportDataToExcel(intersectionGridView);
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    viewModel.ExportDataToExcel(intersectionGridView, sfd.FileName);
+                }
+            }
         }
     }
 }

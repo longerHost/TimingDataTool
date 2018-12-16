@@ -26,6 +26,6 @@ namespace TimingDataTool
         /// Export data to excel file
         /// </summary>
         /// <param name="intersectionGridView"></param>
-        void ExportDataToExcel(DataGridView intersectionGridView);
+        void ExportDataToExcel(DataGridView intersectionGridView, string filePath);
     }
 }

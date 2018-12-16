@@ -462,7 +462,7 @@ namespace TimingDataTool
         /// Export data to excel file
         /// </summary>
         /// <param name="intersectionGridView"></param>
-        public void ExportDataToExcel(DataGridView intersectionGridView)
+        public void ExportDataToExcel(DataGridView intersectionGridView, string filePath)
         {
             //Check intersection loaded
             if (Intersections == null || Intersections.Count <= 0)
@@ -585,7 +585,7 @@ namespace TimingDataTool
             //8. Fix issue when encounter N/A problem
 
             //C. Export to files
-            xlWorkBook.SaveAs("c:\\Users\\xiaolongm\\Desktop\\csharp-Excel.xls", Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+            xlWorkBook.SaveAs(filePath, Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
 
