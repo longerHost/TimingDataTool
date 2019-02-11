@@ -32,20 +32,22 @@
             this.ScheduleLabel = new System.Windows.Forms.Label();
             this.intersectionNameLabel = new System.Windows.Forms.Label();
             this.intersectionLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.PlansListGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // PlansListGridView
             // 
             this.PlansListGridView.AllowUserToAddRows = false;
-            this.PlansListGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.PlansListGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlansListGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.PlansListGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.PlansListGridView.Location = new System.Drawing.Point(36, 57);
             this.PlansListGridView.Name = "PlansListGridView";
-            this.PlansListGridView.Size = new System.Drawing.Size(1325, 415);
+            this.PlansListGridView.Size = new System.Drawing.Size(1141, 175);
             this.PlansListGridView.TabIndex = 0;
             this.PlansListGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.PlansListGridView_CellClick);
             // 
@@ -75,11 +77,30 @@
             this.intersectionLabel.TabIndex = 3;
             this.intersectionLabel.Text = "Intersection:";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(46, 266);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Patterns";
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(39, 302);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(1138, 167);
+            this.dataGridView1.TabIndex = 5;
+            // 
             // SchedulesFrom
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1385, 498);
+            this.ClientSize = new System.Drawing.Size(1206, 516);
+            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.intersectionLabel);
             this.Controls.Add(this.intersectionNameLabel);
             this.Controls.Add(this.ScheduleLabel);
@@ -87,6 +108,7 @@
             this.Name = "SchedulesFrom";
             this.Text = "Plan Schedules";
             ((System.ComponentModel.ISupportInitialize)(this.PlansListGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -98,5 +120,7 @@
         private System.Windows.Forms.Label ScheduleLabel;
         private System.Windows.Forms.Label intersectionNameLabel;
         private System.Windows.Forms.Label intersectionLabel;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }
