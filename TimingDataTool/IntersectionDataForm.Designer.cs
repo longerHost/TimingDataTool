@@ -40,7 +40,7 @@
             this.importBtn.Name = "importBtn";
             this.importBtn.Size = new System.Drawing.Size(75, 23);
             this.importBtn.TabIndex = 0;
-            this.importBtn.Text = "import";
+            this.importBtn.Text = "Import";
             this.importBtn.UseVisualStyleBackColor = true;
             this.importBtn.Click += new System.EventHandler(this.importBtn_Click);
             // 
