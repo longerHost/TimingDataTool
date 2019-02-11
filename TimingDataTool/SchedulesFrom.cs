@@ -21,14 +21,27 @@ namespace TimingDataTool
             InitializeComponent();
             intersection = isc;
             intersectionNameLabel.Text = isc.Name;
-            DataTable dt = getSheduleTableWithIntersection(isc);
-            PlansListGridView.DataSource = dt;
-        }
 
+            // Schedule DataGridView
+            DataTable sdt = getSheduleTableWithIntersection(isc);
+            PlansListGridView.DataSource = sdt;
+
+            // Patterns DataGridView
+            //DataTable pdt = getPatternsTableFromIntersection(isc);
+
+        }
+        /*
+        private DataTable getPatternsTableFromIntersection(Intersection isc)
+        {
+            DataTable dt = new DataTable();
+            IList<DayPlan> dayPlans = isc.
+
+        }
+        */
         public DataTable getSheduleTableWithIntersection(Intersection isc)
         {
             DataTable dt = new DataTable();
-            IList<IList<DayPlan>> daysPlans = isc.wholeWeeksDayPlan.Values.ToList();
+            IList<IList<DayPlan>> daysPlans = isc.WholeWeeksDayPlan.Values.ToList();
 
             dt.Columns.Add("Week days");
             dt.Columns.Add("Plan 1");
@@ -89,12 +102,22 @@ namespace TimingDataTool
         {
             if(e.RowIndex != -1 && PlansListGridView.CurrentCell.Value.ToString() != "N/A" && e.ColumnIndex != 0)
             {
-                IList<DayPlan> dayPlans = intersection.wholeWeeksDayPlan[e.RowIndex + 1];
+                IList<DayPlan> dayPlans = intersection.WholeWeeksDayPlan[e.RowIndex + 1];
                 DayPlan dp = dayPlans[e.ColumnIndex - 1];
 
                 PlanDetailsForm pf = new PlanDetailsForm(intersection, dp);
                 pf.ShowDialog();
             }
+        }
+
+        private void PlansListGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
 
         /*

@@ -45,10 +45,10 @@ namespace TimingDataTool
             }
 
             Split s = dp.TimingPlan.split;
-            IDictionary<string, double> wp = intersection.presetInfo.WalkInfo;
-            IDictionary<string, double> pp = intersection.presetInfo.PedClearance;
-            IDictionary<string, double> yp = intersection.presetInfo.YellowCtl;
-            IDictionary<string, double> rp = intersection.presetInfo.RedCtr;
+            IDictionary<string, double> wp = intersection.PresetInfo.WalkInfo;
+            IDictionary<string, double> pp = intersection.PresetInfo.PedClearance;
+            IDictionary<string, double> yp = intersection.PresetInfo.YellowCtl;
+            IDictionary<string, double> rp = intersection.PresetInfo.RedCtr;
 
             //Add Rows
             dt.Rows.Add("Split", s.phases[0].Length, s.phases[1].Length, s.phases[2].Length, s.phases[3].Length, s.phases[4].Length, s.phases[5].Length, s.phases[6].Length, s.phases[7].Length, s.phases[8].Length, s.phases[9].Length, s.phases[10].Length, s.phases[11].Length, s.phases[12].Length, s.phases[13].Length, s.phases[14].Length, s.phases[15].Length);
