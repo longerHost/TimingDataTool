@@ -34,15 +34,6 @@
             this.intersectionLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.PatternDataGridView = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.PlansListGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PatternDataGridView)).BeginInit();
             this.SuspendLayout();
@@ -59,7 +50,6 @@
             this.PlansListGridView.Size = new System.Drawing.Size(1141, 175);
             this.PlansListGridView.TabIndex = 0;
             this.PlansListGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.PlansListGridView_CellClick);
-            this.PlansListGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.PlansListGridView_CellContentClick);
             // 
             // ScheduleLabel
             // 
@@ -103,66 +93,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PatternDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.PatternDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.PatternDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2,
-            this.Column3,
-            this.Column4,
-            this.Column5,
-            this.Column6,
-            this.Column7,
-            this.Column8,
-            this.Column9});
             this.PatternDataGridView.Location = new System.Drawing.Point(38, 302);
             this.PatternDataGridView.Name = "PatternDataGridView";
-            this.PatternDataGridView.Size = new System.Drawing.Size(1138, 167);
+            this.PatternDataGridView.Size = new System.Drawing.Size(1138, 159);
             this.PatternDataGridView.TabIndex = 5;
-            this.PatternDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "1";
-            this.Column1.Name = "Column1";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "2";
-            this.Column2.Name = "Column2";
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "3";
-            this.Column3.Name = "Column3";
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "4";
-            this.Column4.Name = "Column4";
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "5";
-            this.Column5.Name = "Column5";
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "6";
-            this.Column6.Name = "Column6";
-            // 
-            // Column7
-            // 
-            this.Column7.HeaderText = "7";
-            this.Column7.Name = "Column7";
-            // 
-            // Column8
-            // 
-            this.Column8.HeaderText = "8";
-            this.Column8.Name = "Column8";
-            // 
-            // Column9
-            // 
-            this.Column9.HeaderText = "9";
-            this.Column9.Name = "Column9";
+            this.PatternDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.PatternDataGridView_CellClick);
             // 
             // SchedulesFrom
             // 
@@ -192,14 +127,5 @@
         private System.Windows.Forms.Label intersectionLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView PatternDataGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
     }
 }

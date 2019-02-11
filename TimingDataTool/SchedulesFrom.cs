@@ -26,19 +26,50 @@ namespace TimingDataTool
             DataTable sdt = getSheduleTableWithIntersection(isc);
             PlansListGridView.DataSource = sdt;
 
-            // Patterns DataGridView
-            //DataTable pdt = getPatternsTableFromIntersection(isc);
+            DataTable pdt = getPatternsTableFromIntersection(isc);
+            PatternDataGridView.DataSource = pdt;
 
         }
 
-        /*
         private DataTable getPatternsTableFromIntersection(Intersection isc)
         {
             DataTable dt = new DataTable();
-            IList<DayPlan> dayPlans = isc.
 
+            dt.Columns.Add("1");
+            dt.Columns.Add("2");
+            dt.Columns.Add("3");
+            dt.Columns.Add("4");
+            dt.Columns.Add("5");
+            dt.Columns.Add("6");
+            dt.Columns.Add("7");
+            dt.Columns.Add("8");
+            dt.Columns.Add("9");
+
+            IList<TimingPlan> timingPlans = isc.AllTimings;
+            int columnNo = 9; // 9 columns in total
+            double Uppper = Math.Ceiling((double)timingPlans.Count / columnNo);
+            IList<string> indexs = new List<string>();
+
+            for(int i = 1; i <= Uppper * columnNo; i++)
+            {
+                if(i <= timingPlans.Count)
+                {
+                    indexs.Add("Pattern " + i);
+                }
+                else
+                {
+                    indexs.Add("N/A");
+                }
+            }
+            
+            for (int j = 0; j < Uppper; j++)
+            {
+                dt.Rows.Add(indexs[0 + j*9], indexs[1 + j * 9], indexs[2 + j * 9], indexs[3 + j * 9], indexs[4 + j * 9], indexs[5 + j * 9], indexs[6 + j * 9], indexs[7 + j * 9], indexs[8 + j * 9]);
+            }
+
+            return dt;
         }
-        */
+        
 
         public DataTable getSheduleTableWithIntersection(Intersection isc)
         {
@@ -112,14 +143,24 @@ namespace TimingDataTool
             }
         }
 
-        private void PlansListGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void PatternDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex != -1 && PatternDataGridView.CurrentCell.Value.ToString() != "N/A")
+            {
+                //IList<DayPlan> dayPlans = intersection.WholeWeeksDayPlan[e.RowIndex + 1];
+                //DayPlan dp = dayPlans[e.ColumnIndex];
 
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+                DayPlan dp = new DayPlan();
+                dp.DayPlanName = PatternDataGridView.CurrentCell.Value.ToString();
+                dp.DayPlanActionId = e.RowIndex * 9 + e.ColumnIndex + 1;
+                //Schedule sc = new Schedule(DateTime.Now, DateTime.Now);
+                //sdp.Schedule = sc;
+                TimingPlan tp = intersection.AllTimings[e.RowIndex * 9 + e.ColumnIndex];
+                dp.TimingPlan = tp;
+                
+                PlanDetailsForm pf = new PlanDetailsForm(intersection, dp);
+                pf.ShowDialog();
+            }
         }
 
         /*

@@ -21,7 +21,12 @@ namespace TimingDataTool
             cycleValueLabel.Text = dp.TimingPlan.CycleLength.ToString();
             offsetValueLabel.Text = dp.TimingPlan.Offset.ToString();
             sequenceValueLabel.Text = dp.TimingPlan.SequenceNumber.ToString();
-            scheduleStartLabel.Text = "From: " + dp.Schedule.StartTime.TimeOfDay.ToString();
+
+            if(dp.Schedule != null)
+            {
+                scheduleStartLabel.Text = "From: " + dp.Schedule.StartTime.TimeOfDay.ToString();
+                scheduleEndLabel.Text = "To: " + dp.Schedule.EndTime.TimeOfDay.ToString();
+            }
 
             string sequenceString = ControllerInfoTool.SequenceIndexToSequence(dp.TimingPlan.SequenceNumber);
             if (sequenceString.Length > 0)
@@ -29,7 +34,6 @@ namespace TimingDataTool
                 ring1Label.Text = sequenceString.Split(':')[0];
                 ring2Label.Text = sequenceString.Split(':')[1];
             }
-            scheduleEndLabel.Text = "To: " + dp.Schedule.EndTime.TimeOfDay.ToString();
             patternNoValueLabel.Text = dp.DayPlanActionId.ToString();
         }
 

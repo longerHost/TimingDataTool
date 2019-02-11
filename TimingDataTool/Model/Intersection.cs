@@ -82,6 +82,17 @@ namespace TimingDataTool.Model.DataModel
             _config = headerDic["Configuration"];
             _wholeWeeksDayPlan = GetWholeWeekDayPlans(ds);
             _presetInfo = GetIntersectionPresetInformation(PhaseTimeOptionsData);
+            _allTimings = GetAllTimingInformationOfIntersection();
+        }
+
+        private IList<TimingPlan> GetAllTimingInformationOfIntersection()
+        {
+            IList<TimingPlan> timings = new List<TimingPlan>();
+            foreach(DataRow r in PatternsData)
+            {
+                timings.Add(GetTimingByPatternRow(r));
+            }
+            return timings;
         }
 
         /// <summary>
@@ -268,9 +279,11 @@ namespace TimingDataTool.Model.DataModel
         private TimingPlan GetDayPlanTiming(int actionNo)
         {
             if (actionNo <= 0) actionNo = 1;  // if action invalid then let it run free(1) as default
+            return GetTimingByPatternRow(PatternsData[actionNo - 1]);
+        }
 
-            DataRow patternRow = PatternsData[actionNo - 1];
-
+        private TimingPlan GetTimingByPatternRow(DataRow patternRow)
+        {
             TimingPlan tp = new TimingPlan();
             tp.CycleLength = Convert.ToInt32(patternRow.ItemArray[1].ToString()); // Cycle time
             tp.SplitNumber = Convert.ToInt32(patternRow.ItemArray[3].ToString()); // Split number
@@ -282,6 +295,8 @@ namespace TimingDataTool.Model.DataModel
 
         private Split GetTimingPlanSplit(int SplitNumber)
         {
+            if (SplitNumber <= 0) SplitNumber = 1;  //if invalid split number let it as default 1
+
             //get split information
             Split sp = new Split();
             sp.phases = GetSplitPhases(SplitNumber);
