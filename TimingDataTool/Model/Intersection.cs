@@ -267,36 +267,15 @@ namespace TimingDataTool.Model.DataModel
         // Get single timing plan
         private TimingPlan GetDayPlanTiming(int actionNo)
         {
-            //get timing plan information
-            TimingPlan tp = new TimingPlan();
-            foreach (DataRow patternRow in PatternsData)
-            {
-                int patternIndex = Convert.ToInt32(patternRow.ItemArray[0].ToString().Split(' ').Last());
-                bool mappingFounded = false;
-                if (actionNo <= 16)
-                {
-                    if (patternIndex == actionNo + 8)
-                    {
-                        mappingFounded = true;
-                    }
-                }
-                else
-                {
-                    if (patternIndex == actionNo)
-                    {
-                        mappingFounded = true;
-                    }
-                }
+            if (actionNo <= 0) actionNo = 1;  // if action invalid then let it run free(1) as default
 
-                if (mappingFounded) // There are problems here
-                {
-                    tp.CycleLength = Convert.ToInt32(patternRow.ItemArray[1].ToString()); // Cycle time
-                    tp.SplitNumber = Convert.ToInt32(patternRow.ItemArray[3].ToString()); // Split number
-                    tp.Offset = Convert.ToInt32(patternRow.ItemArray[2].ToString()); // Offset
-                    tp.SequenceNumber = Convert.ToInt32(patternRow.ItemArray[4].ToString()); // Seq number
-                    break;
-                }
-            }
+            DataRow patternRow = PatternsData[actionNo - 1];
+
+            TimingPlan tp = new TimingPlan();
+            tp.CycleLength = Convert.ToInt32(patternRow.ItemArray[1].ToString()); // Cycle time
+            tp.SplitNumber = Convert.ToInt32(patternRow.ItemArray[3].ToString()); // Split number
+            tp.Offset = Convert.ToInt32(patternRow.ItemArray[2].ToString()); // Offset
+            tp.SequenceNumber = Convert.ToInt32(patternRow.ItemArray[4].ToString()); // Seq number
             tp.split = GetTimingPlanSplit(tp.SplitNumber);
             return tp;
         }
@@ -360,15 +339,12 @@ namespace TimingDataTool.Model.DataModel
                 if (temp.Length == 2)
                 {
                     string pattern = temp[0];
-                    if (pattern == "Pattern")
+                    if (pattern == "Pattern")  // filter out invalid data
                     {
                         int patternIndex = 0;
                         if (int.TryParse(temp[1], out patternIndex))
                         {
-                            if (patternIndex >= 0 && patternIndex <= 32)
-                            {
-                                validDataRow.Add(r);
-                            }
+                            validDataRow.Add(r);
                         }
                     }
                 }

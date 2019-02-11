@@ -199,18 +199,6 @@ namespace TimingDataTool
                 }
             }
 
-            //Further to do  
-            //1. load intersection with dataTable   ** Done
-            //2. load intersection timing details to each sheet   ** Done
-            //3. debug could not copy column 7 and 8 on schedule ** Done
-            //4. put intersection and schedule tab front  
-            //5. delete the empty column in intersection list ** Done
-            //6. Mark intersection name for schedules  
-            //7. Copy intersection list cell by cell instead of from UI  **ignore
-
-            //8. Fix issue when encounter N/A problem
-
-            //C. Export to files
             xlWorkBook.SaveAs(filePath, Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
