@@ -207,7 +207,7 @@ namespace TimingDataTool
             Marshal.ReleaseComObject(xlWorkBook);
             Marshal.ReleaseComObject(xlApp);
 
-            MessageBox.Show("Excel file created , you can find the file c:\\Users\\xiaolongm\\Desktop\\csharp-Excel.xls");
+            MessageBox.Show("Excel file created , you can find the file on: " + filePath);
         }
 
         private static void CopyAllToClipboard(DataGridView dgv)
