@@ -265,14 +265,35 @@ namespace TimingDataTool
 
             // Create Patterns Frames
             int patternsFrameOffset = intersectionCommonFrameOffset + 6;
-            int patternFrameHeight = 7;
-
+            int patternFrameHeight = 5;
 
             // Find patterns need to display
-            IList<DayPlan> dayplans = new List<DayPlan>();
-            foreach(IList<DayPlan> dps in intersection.WholeWeeksDayPlan.Values.ToList())
+            IList<DayPlan> displayPatterns = FindPatternsNeedToDisplay(intersection);
+
+            for(int i = 0; i < displayPatterns.Count; i++)
             {
-                foreach(DayPlan dp in dps)
+                DayPlan p = displayPatterns[i];
+                timingSheet.Cells[patternFrameHeight* i + patternsFrameOffset + 1, 1] = "Pattern: " + p.DayPlanActionId;
+                timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, 1] = "Type/Phases";
+                timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 3, 1] = "Split";
+
+                for (int j = 0; j < planNames.Count; j++)
+                {
+                    timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, j + 2] = planNames[i];
+                    timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 3, j + 2] = p.TimingPlan.split.phases[j].Length;
+                    
+                }
+            }
+
+
+        }
+
+        private IList<DayPlan> FindPatternsNeedToDisplay(Intersection intersection)
+        {
+            IList<DayPlan> dayplans = new List<DayPlan>();
+            foreach (IList<DayPlan> dps in intersection.WholeWeeksDayPlan.Values.ToList())
+            {
+                foreach (DayPlan dp in dps)
                 {
                     dayplans.Add(dp);
                 }
@@ -283,7 +304,7 @@ namespace TimingDataTool
             IList<DayPlan> selectedDayPlans = new List<DayPlan>();
             foreach (DayPlan dp in dayplans)
             {
-                if(distinctPatternIds.Contains(dp.DayPlanActionId) && distinctPatternIds.Count > 0)
+                if (distinctPatternIds.Contains(dp.DayPlanActionId) && distinctPatternIds.Count > 0)
                 {
                     distinctPatternIds.Remove(dp.DayPlanActionId);
                     selectedDayPlans.Add(dp);
@@ -291,7 +312,7 @@ namespace TimingDataTool
             }
 
             IList<DayPlan> sortedSelectedDayplans = selectedDayPlans.OrderBy(p => p.DayPlanActionId).ToList();
-            
+            return sortedSelectedDayplans;
         }
 
         private string GetTimeHourAndMinuteString(DateTime dateTime)
