@@ -18,6 +18,7 @@ namespace TimingDataTool
         private IList<DataSet> filesDataSet;
 
         private Microsoft.Office.Interop.Excel.Application xlApp;
+        private Workbook xlWorkBook;
 
         public IList<Intersection> ImportExcelFilesAndLoad(string[] filesPaths)
         {
@@ -94,26 +95,19 @@ namespace TimingDataTool
         public void ExportDataToExcel(DataGridView intersectionGridView, string filePath)
         {
             CheckIntersectionsValidation();
-            Workbook xlWorkBook = CreateExcelWorkBook();
+            xlWorkBook = CreateExcelWorkBook();
+            Worksheet intersectionSheet = CreateIntersectionsWorkSheet();
+            CreateIntersectionsTimingWorkSheet(Intersections);
 
-            // Creating intial worksheet
-            Worksheet xlWorkSheet;
-            xlWorkSheet = (Worksheet)xlWorkBook.Worksheets.get_Item(1);
-            CopyAllToClipboard(intersectionGridView);
-            Range CR = (Range)xlWorkSheet.Cells[1, 1];
-            CR.Select();
-            xlWorkSheet.Name = "Intersections";
-            xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
-            Range range = xlWorkSheet.get_Range("A1", Type.Missing);
-            range.EntireColumn.Delete(Type.Missing);
 
+
+            /*
             int intersecionSheetOffset = 10; //The starting index of intersecion details in each intersection sheet
             for(int k = 0; k < Intersections.Count; k++)
             {
                 SchedulesFrom sf = new SchedulesFrom(Intersections[0]);
                 Intersection isc = Intersections[k];
                 System.Data.DataTable scheduleDt = sf.getSheduleTableWithIntersection(isc);
-
 
                 // Creating timing pattern details for each intersection
                 Worksheet intersectionTimingSheet;
@@ -183,17 +177,56 @@ namespace TimingDataTool
                     }
                 }
             }
+            */
 
             object misValue = System.Reflection.Missing.Value;
-            xlWorkBook.SaveAs(filePath, Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+            xlWorkBook.SaveAs(filePath, XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
 
-            Marshal.ReleaseComObject(xlWorkSheet);
+            //Marshal.ReleaseComObject(xlWorkSheet);
             Marshal.ReleaseComObject(xlWorkBook);
             Marshal.ReleaseComObject(xlApp);
 
             MessageBox.Show("Excel file created , you can find the file on: " + filePath);
+        }
+
+        private void CreateIntersectionsTimingWorkSheet(IList<Intersection> intersections)
+        {
+            foreach(Intersection i in intersections)
+            {
+                Worksheet intersectionTimingSheet;
+                intersectionTimingSheet = (Worksheet)xlWorkBook.Worksheets.Add();
+                intersectionTimingSheet.Name = FixNameToOfficialFormat(i.Name) ;
+            }
+        }
+
+        private string FixNameToOfficialFormat(string originalName)
+        {
+            string officialName = originalName;
+            if (originalName.Length > 31)
+            {
+                officialName = originalName.Substring(0, 31);
+            }
+            return officialName;
+        }
+
+        private Worksheet CreateIntersectionsWorkSheet()
+        {
+            Worksheet intersectionSheet;
+            intersectionSheet = (Worksheet)xlWorkBook.Worksheets.get_Item(1);
+            intersectionSheet.Name = "Intersections";
+
+            intersectionSheet.Cells[1, 1] = "Intersections";
+            intersectionSheet.Cells[1, 2] = "ID";
+            intersectionSheet.Cells[1, 3] = "Configuration";
+            for (int i = 0; i < Intersections.Count; i++)
+            {
+                intersectionSheet.Cells[i + 2, 1] = Intersections[i].Name;
+                intersectionSheet.Cells[i + 2, 2] = Intersections[i].Id;
+                intersectionSheet.Cells[i + 2, 3] = Intersections[i].Config;
+            }
+            return intersectionSheet;
         }
 
         private Workbook CreateExcelWorkBook()
