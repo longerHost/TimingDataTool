@@ -94,95 +94,17 @@ namespace TimingDataTool
         /// <param name="intersectionGridView"></param>
         public void ExportDataToExcel(DataGridView intersectionGridView, string filePath)
         {
+            // Create
             CheckIntersectionsValidation();
             xlWorkBook = CreateExcelWorkBook();
             Worksheet intersectionSheet = CreateIntersectionsWorkSheet();
             CreateIntersectionsTimingWorkSheet(Intersections);
 
-            /*
-            int intersecionSheetOffset = 10; //The starting index of intersecion details in each intersection sheet
-            for(int k = 0; k < Intersections.Count; k++)
-            {
-                SchedulesFrom sf = new SchedulesFrom(Intersections[0]);
-                Intersection isc = Intersections[k];
-                System.Data.DataTable scheduleDt = sf.getSheduleTableWithIntersection(isc);
-
-                // Creating timing pattern details for each intersection
-                Worksheet intersectionTimingSheet;
-                intersectionTimingSheet = (Worksheet)xlWorkBook.Worksheets.Add();
-
-                string originalName = Intersections[k].Name;
-                string officialName = originalName;
-                if (originalName.Length > 31)
-                {
-                    officialName = originalName.Substring(0, 31);
-                }
-
-                intersectionTimingSheet.Name = officialName;
-
-                // Add schedule information at each intersection sheet
-                intersectionTimingSheet.Cells[1, 1] = isc.Name;
-                // Add schedule form header(Weekday | plan 1 | plan 2 ... | plan 8 )
-                for (int i = 0; i < scheduleDt.Columns.Count; i++)
-                {
-                    intersectionTimingSheet.Cells[2, i + 1] = scheduleDt.Columns[i].ColumnName;
-                }
-
-                // Add content
-                for (int i = 0; i < scheduleDt.Rows.Count; i++)
-                {
-                    for (int j = 0; j < scheduleDt.Columns.Count; j++)
-                    {
-                        intersectionTimingSheet.Cells[i + 3, j + 1] = scheduleDt.Rows[i][j];
-                    }
-                }
-
-                int frameHeight = 9; // set Frame height of each pattern
-
-                // Timing details of current intersection
-                int planNumber = 0;
-                for(int dayIndex = 1; dayIndex <= isc.WholeWeeksDayPlan.Values.Count; dayIndex++)
-                {
-                    IList<DayPlan> plans = isc.WholeWeeksDayPlan.Values.ToList()[dayIndex-1];
-                    for(int planIndex = 1; planIndex <= plans.Count; planIndex++)
-                    {
-                        DayPlan plan = plans[planIndex - 1];
-                        PlanDetailsForm pf = new PlanDetailsForm(isc, isc.WholeWeeksDayPlan.Values.ToList()[dayIndex - 1][planIndex - 1]);
-                        System.Data.DataTable detailsTable = pf.getPlanTableWithIntersection(isc, plan);
-
-                        //Fill the sheet one by one
-                        
-                        //Add header
-                        for (int i = 0; i < detailsTable.Columns.Count; i++)
-                        {
-                            //plan information
-                            intersectionTimingSheet.Cells[intersecionSheetOffset + frameHeight * planNumber + 1, 1] = "Pattern Number: " + plan.DayPlanActionId.ToString();
-
-                            //Plan header
-                            intersectionTimingSheet.Cells[intersecionSheetOffset + frameHeight * planNumber + 2, i + 1] = detailsTable.Columns[i].ColumnName;
-                        }
-
-                        // Add content
-                        for (int i = 0; i < detailsTable.Rows.Count; i++)
-                        {
-                            for (int j = 0; j < detailsTable.Columns.Count; j++)
-                            {
-                                intersectionTimingSheet.Cells[intersecionSheetOffset + frameHeight * planNumber + 3 + i, j + 1] = detailsTable.Rows[i][j];
-                            }
-                        }
-
-                        planNumber++;
-                    }
-                }
-            }
-            */
-
+            // Save
             object misValue = System.Reflection.Missing.Value;
             xlWorkBook.SaveAs(filePath, XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
-
-            //Marshal.ReleaseComObject(xlWorkSheet);
             Marshal.ReleaseComObject(xlWorkBook);
             Marshal.ReleaseComObject(xlApp);
 
@@ -273,19 +195,35 @@ namespace TimingDataTool
             for(int i = 0; i < displayPatterns.Count; i++)
             {
                 DayPlan p = displayPatterns[i];
+
+                int coordinatePhaseId = GetCoordinatePhaseId(p);
                 timingSheet.Cells[patternFrameHeight* i + patternsFrameOffset + 1, 1] = "Pattern: " + p.DayPlanActionId;
                 timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, 1] = "Type/Phases";
                 timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 3, 1] = "Split";
 
                 for (int j = 0; j < planNames.Count; j++)
                 {
-                    timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, j + 2] = planNames[i];
+                    timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, j + 2] = planNames[j];
+                    if (j + 1 == coordinatePhaseId)
+                    {
+                        timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, j + 2] = planNames[j] + "*";
+                    }
+
                     timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 3, j + 2] = p.TimingPlan.split.phases[j].Length;
-                    
                 }
             }
+        }
 
-
+        private int GetCoordinatePhaseId(DayPlan plan)
+        {
+            foreach(Phase p in plan.TimingPlan.split.phases)
+            {
+                if(p.CoordinatePhase)
+                {
+                    return p.PhaseId;
+                }
+            }
+            return 0;
         }
 
         private IList<DayPlan> FindPatternsNeedToDisplay(Intersection intersection)
