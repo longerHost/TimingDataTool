@@ -17,6 +17,8 @@ namespace TimingDataTool
 
         private IList<DataSet> filesDataSet;
 
+        private Microsoft.Office.Interop.Excel.Application xlApp;
+
         public IList<Intersection> ImportExcelFilesAndLoad(string[] filesPaths)
         {
             filesDataSet = new List<DataSet>();
@@ -92,25 +94,17 @@ namespace TimingDataTool
         public void ExportDataToExcel(DataGridView intersectionGridView, string filePath)
         {
             CheckIntersectionsValidation();
+            Workbook xlWorkBook = CreateExcelWorkBook();
 
-            //CreateExcelFile();
-            // creating Excel Application
-            Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
-
-            // Creating new workbook
-            Microsoft.Office.Interop.Excel.Workbook xlWorkBook;
-            object misValue = System.Reflection.Missing.Value;
-            xlWorkBook = xlApp.Workbooks.Add(misValue);
-            
             // Creating intial worksheet
-            Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet;
-            xlWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+            Worksheet xlWorkSheet;
+            xlWorkSheet = (Worksheet)xlWorkBook.Worksheets.get_Item(1);
             CopyAllToClipboard(intersectionGridView);
-            Microsoft.Office.Interop.Excel.Range CR = (Microsoft.Office.Interop.Excel.Range)xlWorkSheet.Cells[1, 1];
+            Range CR = (Range)xlWorkSheet.Cells[1, 1];
             CR.Select();
             xlWorkSheet.Name = "Intersections";
             xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
-            Microsoft.Office.Interop.Excel.Range range = (Microsoft.Office.Interop.Excel.Range)xlWorkSheet.get_Range("A1", Type.Missing);
+            Range range = xlWorkSheet.get_Range("A1", Type.Missing);
             range.EntireColumn.Delete(Type.Missing);
 
             int intersecionSheetOffset = 10; //The starting index of intersecion details in each intersection sheet
@@ -122,8 +116,8 @@ namespace TimingDataTool
 
 
                 // Creating timing pattern details for each intersection
-                Microsoft.Office.Interop.Excel.Worksheet intersectionTimingSheet;
-                intersectionTimingSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
+                Worksheet intersectionTimingSheet;
+                intersectionTimingSheet = (Worksheet)xlWorkBook.Worksheets.Add();
 
                 string originalName = Intersections[k].Name;
                 string officialName = originalName;
@@ -190,6 +184,7 @@ namespace TimingDataTool
                 }
             }
 
+            object misValue = System.Reflection.Missing.Value;
             xlWorkBook.SaveAs(filePath, Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
@@ -201,7 +196,14 @@ namespace TimingDataTool
             MessageBox.Show("Excel file created , you can find the file on: " + filePath);
         }
 
-        /*
+        private Workbook CreateExcelWorkBook()
+        {
+            xlApp = CreateExcelApplicaitonInstance();
+            object misValue = System.Reflection.Missing.Value;
+            Workbook xlWorkBook = xlApp.Workbooks.Add(misValue);
+            return xlWorkBook;
+        }
+
         private Microsoft.Office.Interop.Excel.Application CreateExcelApplicaitonInstance()
         {
             Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
@@ -211,7 +213,7 @@ namespace TimingDataTool
             }
             return xlApp;
         }
-        */
+        
 
         private void CheckIntersectionsValidation()
         {
