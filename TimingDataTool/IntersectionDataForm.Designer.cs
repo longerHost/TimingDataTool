@@ -74,6 +74,7 @@
             this.Controls.Add(this.intersectionGridView);
             this.Controls.Add(this.importBtn);
             this.Name = "IntersectionForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Intersections list";
             ((System.ComponentModel.ISupportInitialize)(this.intersectionGridView)).EndInit();
             this.ResumeLayout(false);
