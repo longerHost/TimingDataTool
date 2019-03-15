@@ -39,5 +39,15 @@ namespace TimingDataTool.Model
             }
             return seqString;
         }
+
+        public static string GetRing1StringBySequenceIndex(int seqIndex)
+        {
+            return SequenceIndexToSequence(seqIndex).Split(':')[0];
+        }
+
+        public static string GetRing2StringBySequenceIndex(int seqIndex)
+        {
+            return SequenceIndexToSequence(seqIndex).Split(':')[1];
+        }
     }
 }

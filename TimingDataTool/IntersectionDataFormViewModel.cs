@@ -196,11 +196,19 @@ namespace TimingDataTool
             {
                 DayPlan p = displayPatterns[i];
 
+                // Pre info
+                timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 1, 1] = "Pattern: " + p.DayPlanActionId;
+                timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 1, 2] = "Cycle Length: " + p.TimingPlan.CycleLength;
+                timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 1, 3] = "Offset: " + p.TimingPlan.Offset;
+                timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 1, 4] = "Ring1: " + ControllerInfoTool.GetRing1StringBySequenceIndex(p.TimingPlan.SequenceNumber);
+                timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 1, 5] = "Ring2: " + ControllerInfoTool.GetRing2StringBySequenceIndex(p.TimingPlan.SequenceNumber);
+
+                // Header info
                 int coordinatePhaseId = GetCoordinatePhaseId(p);
-                timingSheet.Cells[patternFrameHeight* i + patternsFrameOffset + 1, 1] = "Pattern: " + p.DayPlanActionId;
                 timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, 1] = "Type/Phases";
                 timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 3, 1] = "Split";
 
+                //Content
                 for (int j = 0; j < planNames.Count; j++)
                 {
                     timingSheet.Cells[patternFrameHeight * i + patternsFrameOffset + 2, j + 2] = planNames[j];
