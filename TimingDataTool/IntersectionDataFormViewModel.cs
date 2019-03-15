@@ -99,8 +99,6 @@ namespace TimingDataTool
             Worksheet intersectionSheet = CreateIntersectionsWorkSheet();
             CreateIntersectionsTimingWorkSheet(Intersections);
 
-
-
             /*
             int intersecionSheetOffset = 10; //The starting index of intersecion details in each intersection sheet
             for(int k = 0; k < Intersections.Count; k++)
@@ -195,10 +193,111 @@ namespace TimingDataTool
         {
             foreach(Intersection i in intersections)
             {
-                Worksheet intersectionTimingSheet;
-                intersectionTimingSheet = (Worksheet)xlWorkBook.Worksheets.Add();
-                intersectionTimingSheet.Name = FixNameToOfficialFormat(i.Name) ;
+                CreateIntersectionTimingWorkSheet(i);
             }
+        }
+
+        private void CreateIntersectionTimingWorkSheet(Intersection intersection)
+        {
+            Worksheet timingSheet;
+            timingSheet = (Worksheet)xlWorkBook.Worksheets.Add();
+            timingSheet.Name = FixNameToOfficialFormat(intersection.Name);
+
+            // Create Schedule Frame
+            timingSheet.Cells[1, 1] = intersection.Name;
+
+            // Header
+            IList<string> scheduleColumnNames = new List<string>();
+            scheduleColumnNames.Add("Week days");
+            scheduleColumnNames.Add("Plan 1");
+            scheduleColumnNames.Add("Plan 2");
+            scheduleColumnNames.Add("Plan 3");
+            scheduleColumnNames.Add("Plan 4");
+            scheduleColumnNames.Add("Plan 5");
+            scheduleColumnNames.Add("Plan 6");
+            scheduleColumnNames.Add("Plan 7");
+            scheduleColumnNames.Add("Plan 8");
+
+            // Index
+            for(int i = 1; i <= scheduleColumnNames.Count; i++)
+            {
+                timingSheet.Cells[2, i] = scheduleColumnNames[i-1];
+            }
+
+            // Content 
+            for(int i = 1; i <= intersection.WholeWeeksDayPlan.Count; i++)
+            {
+                IList<DayPlan> plans = intersection.WholeWeeksDayPlan[i];
+                timingSheet.Cells[i + 2, 1] = i.ToString();
+                for(int j = 1; j <= 8; j++)
+                {
+                    string displayStr = "N/A";
+                    if(j <= plans.Count)
+                    {
+                        DayPlan p = plans[j - 1];
+                        string startTime = GetTimeHourAndMinuteString(p.Schedule.StartTime);
+                        string endTime = GetTimeHourAndMinuteString(p.Schedule.EndTime);
+                        string patternStr = p.DayPlanActionId.ToString();
+                        displayStr = startTime + " - " + endTime + " (" + patternStr + ")";
+                    }
+                    timingSheet.Cells[i + 2, j + 1] = displayStr;
+                }
+            }
+            //
+            //
+
+            // Create intersection common info frame
+            int intersectionCommonFrameOffset = 10;
+            timingSheet.Cells[intersectionCommonFrameOffset + 1, 1] = "Type/Phases";
+            timingSheet.Cells[intersectionCommonFrameOffset + 2, 1] = "walk";
+            timingSheet.Cells[intersectionCommonFrameOffset + 3, 1] = "Ped Clear";
+            timingSheet.Cells[intersectionCommonFrameOffset + 4, 1] = "Yellow Ctr";
+            timingSheet.Cells[intersectionCommonFrameOffset + 5, 1] = "Red Ctr";
+            IList<string> planNames = new List<string>(new string[] { "Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6", "Phase 7", "Phase 8", "Phase 9", "Phase 10", "Phase 11", "Phase 12", "Phase 13", "Phase 14", "Phase 15", "Phase 16" });
+            for(int i = 0; i < planNames.Count; i++)
+            {
+                timingSheet.Cells[intersectionCommonFrameOffset + 1, i + 2] = planNames[i];
+                timingSheet.Cells[intersectionCommonFrameOffset + 2, i + 2] = intersection.PresetInfo.WalkInfo[planNames[i]].ToString();
+                timingSheet.Cells[intersectionCommonFrameOffset + 3, i + 2] = intersection.PresetInfo.PedClearance[planNames[i]].ToString();
+                timingSheet.Cells[intersectionCommonFrameOffset + 4, i + 2] = intersection.PresetInfo.YellowCtl[planNames[i]].ToString();
+                timingSheet.Cells[intersectionCommonFrameOffset + 5, i + 2] = intersection.PresetInfo.RedCtr[planNames[i]].ToString();
+            }
+
+            // Create Patterns Frames
+            int patternsFrameOffset = intersectionCommonFrameOffset + 6;
+            int patternFrameHeight = 7;
+
+
+            // Find patterns need to display
+            IList<DayPlan> dayplans = new List<DayPlan>();
+            foreach(IList<DayPlan> dps in intersection.WholeWeeksDayPlan.Values.ToList())
+            {
+                foreach(DayPlan dp in dps)
+                {
+                    dayplans.Add(dp);
+                }
+            }
+
+            List<int> distinctPatternIds = dayplans.Select(e => e.DayPlanActionId).Distinct().ToList();
+
+            IList<DayPlan> selectedDayPlans = new List<DayPlan>();
+            foreach (DayPlan dp in dayplans)
+            {
+                if(distinctPatternIds.Contains(dp.DayPlanActionId) && distinctPatternIds.Count > 0)
+                {
+                    distinctPatternIds.Remove(dp.DayPlanActionId);
+                    selectedDayPlans.Add(dp);
+                }
+            }
+
+            IList<DayPlan> sortedSelectedDayplans = selectedDayPlans.OrderBy(p => p.DayPlanActionId).ToList();
+            
+        }
+
+        private string GetTimeHourAndMinuteString(DateTime dateTime)
+        {
+            string timeStr = dateTime.ToString("HH:mm");
+            return timeStr;
         }
 
         private string FixNameToOfficialFormat(string originalName)
@@ -247,7 +346,6 @@ namespace TimingDataTool
             return xlApp;
         }
         
-
         private void CheckIntersectionsValidation()
         {
             if (Intersections == null || Intersections.Count <= 0)
