@@ -5,6 +5,7 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Microsoft.Office.Interop.Excel;
 using TimingDataTool.Model;
 using TimingDataTool.Model.DataModel;
 
@@ -65,11 +66,11 @@ namespace TimingDataTool
             }
 
             //Get all sheets and push to dataset
-            DataTable dtSheetName = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object[] { null, null, null, "Table" });
+            System.Data.DataTable dtSheetName = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object[] { null, null, null, "Table" });
             ds = new DataSet();
             for (int i = 0; i < dtSheetName.Rows.Count; i++)
             {
-                DataTable dt = new DataTable();
+                System.Data.DataTable dt = new System.Data.DataTable();
                 dt.TableName = "table" + i.ToString();
                 //get sheet name
                 sheetName = dtSheetName.Rows[i]["TABLE_NAME"].ToString();
@@ -90,21 +91,11 @@ namespace TimingDataTool
         /// <param name="intersectionGridView"></param>
         public void ExportDataToExcel(DataGridView intersectionGridView, string filePath)
         {
-            //Check intersection loaded
-            if (Intersections == null || Intersections.Count <= 0)
-            {
-                MessageBox.Show("Please import proper files");
-                return;
-            }
+            CheckIntersectionsValidation();
 
+            //CreateExcelFile();
             // creating Excel Application
             Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
-
-            if (xlApp == null)
-            {
-                MessageBox.Show("Excel is not properly installed!!");
-                return;
-            }
 
             // Creating new workbook
             Microsoft.Office.Interop.Excel.Workbook xlWorkBook;
@@ -117,38 +108,20 @@ namespace TimingDataTool
             CopyAllToClipboard(intersectionGridView);
             Microsoft.Office.Interop.Excel.Range CR = (Microsoft.Office.Interop.Excel.Range)xlWorkSheet.Cells[1, 1];
             CR.Select();
-            xlWorkSheet.Name = "intersections";
+            xlWorkSheet.Name = "Intersections";
             xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
             Microsoft.Office.Interop.Excel.Range range = (Microsoft.Office.Interop.Excel.Range)xlWorkSheet.get_Range("A1", Type.Missing);
             range.EntireColumn.Delete(Type.Missing);
 
-            // Creating schedules worksheet
-            Microsoft.Office.Interop.Excel.Worksheet scheduleSheet;
-            scheduleSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
-            scheduleSheet.Name = "Schedules";
+            int intersecionSheetOffset = 10; //The starting index of intersecion details in each intersection sheet
             for(int k = 0; k < Intersections.Count; k++)
             {
                 SchedulesFrom sf = new SchedulesFrom(Intersections[0]);
                 Intersection isc = Intersections[k];
-                DataTable scheduleDt = sf.getSheduleTableWithIntersection(isc);
-                int multiplier = 9;
+                System.Data.DataTable scheduleDt = sf.getSheduleTableWithIntersection(isc);
 
-                // Add header
-                for (int i = 0; i < scheduleDt.Columns.Count; i++)
-                {
-                    scheduleSheet.Cells[k * multiplier + 1, i + 1] = scheduleDt.Columns[i].ColumnName;
-                }
 
-                // Add content
-                for (int i = 0; i < scheduleDt.Rows.Count; i++)
-                {
-                    for (int j = 0; j < scheduleDt.Columns.Count; j++)
-                    {
-                        scheduleSheet.Cells[k * multiplier + i + 2, j + 1] = scheduleDt.Rows[i][j];
-                    }
-                }
-
-                // Creating timing details for each intersection
+                // Creating timing pattern details for each intersection
                 Microsoft.Office.Interop.Excel.Worksheet intersectionTimingSheet;
                 intersectionTimingSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.Add();
 
@@ -161,6 +134,26 @@ namespace TimingDataTool
 
                 intersectionTimingSheet.Name = officialName;
 
+                // Add schedule information at each intersection sheet
+                intersectionTimingSheet.Cells[1, 1] = isc.Name;
+                // Add schedule form header(Weekday | plan 1 | plan 2 ... | plan 8 )
+                for (int i = 0; i < scheduleDt.Columns.Count; i++)
+                {
+                    intersectionTimingSheet.Cells[2, i + 1] = scheduleDt.Columns[i].ColumnName;
+                }
+
+                // Add content
+                for (int i = 0; i < scheduleDt.Rows.Count; i++)
+                {
+                    for (int j = 0; j < scheduleDt.Columns.Count; j++)
+                    {
+                        intersectionTimingSheet.Cells[i + 3, j + 1] = scheduleDt.Rows[i][j];
+                    }
+                }
+
+                int frameHeight = 9; // set Frame height of each pattern
+
+                // Timing details of current intersection
                 int planNumber = 0;
                 for(int dayIndex = 1; dayIndex <= isc.WholeWeeksDayPlan.Values.Count; dayIndex++)
                 {
@@ -169,20 +162,18 @@ namespace TimingDataTool
                     {
                         DayPlan plan = plans[planIndex - 1];
                         PlanDetailsForm pf = new PlanDetailsForm(isc, isc.WholeWeeksDayPlan.Values.ToList()[dayIndex - 1][planIndex - 1]);
-                        DataTable detailsTable = pf.getPlanTableWithIntersection(isc, plan);
+                        System.Data.DataTable detailsTable = pf.getPlanTableWithIntersection(isc, plan);
 
                         //Fill the sheet one by one
-
+                        
                         //Add header
                         for (int i = 0; i < detailsTable.Columns.Count; i++)
                         {
                             //plan information
-                            intersectionTimingSheet.Cells[multiplier * planNumber + 1, 1] = "Plan Index: " + (planNumber + 1).ToString();
-                            intersectionTimingSheet.Cells[multiplier * planNumber + 1, 2] = "Day Index: " + dayIndex.ToString();
-                            intersectionTimingSheet.Cells[multiplier * planNumber + 1, 3] = "Plan Start: " + plan.Schedule.StartTime.TimeOfDay.ToString();
+                            intersectionTimingSheet.Cells[intersecionSheetOffset + frameHeight * planNumber + 1, 1] = "Pattern Number: " + plan.DayPlanActionId.ToString();
 
                             //Plan header
-                            intersectionTimingSheet.Cells[multiplier * planNumber + 2, i + 1] = detailsTable.Columns[i].ColumnName;
+                            intersectionTimingSheet.Cells[intersecionSheetOffset + frameHeight * planNumber + 2, i + 1] = detailsTable.Columns[i].ColumnName;
                         }
 
                         // Add content
@@ -190,7 +181,7 @@ namespace TimingDataTool
                         {
                             for (int j = 0; j < detailsTable.Columns.Count; j++)
                             {
-                                intersectionTimingSheet.Cells[multiplier * planNumber + 3 + i, j + 1] = detailsTable.Rows[i][j];
+                                intersectionTimingSheet.Cells[intersecionSheetOffset + frameHeight * planNumber + 3 + i, j + 1] = detailsTable.Rows[i][j];
                             }
                         }
 
@@ -208,6 +199,27 @@ namespace TimingDataTool
             Marshal.ReleaseComObject(xlApp);
 
             MessageBox.Show("Excel file created , you can find the file on: " + filePath);
+        }
+
+        /*
+        private Microsoft.Office.Interop.Excel.Application CreateExcelApplicaitonInstance()
+        {
+            Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
+            if (xlApp == null)
+            {
+                MessageBox.Show("Excel is not properly installed!!");
+            }
+            return xlApp;
+        }
+        */
+
+        private void CheckIntersectionsValidation()
+        {
+            if (Intersections == null || Intersections.Count <= 0)
+            {
+                MessageBox.Show("Please import proper files");
+                return;
+            }
         }
 
         private static void CopyAllToClipboard(DataGridView dgv)
